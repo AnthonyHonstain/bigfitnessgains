@@ -25,7 +25,7 @@ sudo apt-get install python-dev build-essential libpq-dev libevent-dev libmemcac
 
 Install Django Dependencies
 ```
-pip install django django-celery django-extensions django-debug_toolbar django-compressor south
+pip install django django-celery django-extensions django-debug_toolbar django-compressor south Werkzeug
 ```
 
 Git - lets go ahead and auto rebase
@@ -69,4 +69,12 @@ Quit the server with CONTROL-C.
 127.0.0.1 - - [01/May/2014 18:44:29] "GET /favicon.ico HTTP/1.1" 404 -
 127.0.0.1 - - [01/May/2014 18:44:29] "GET /favicon.ico HTTP/1.1" 404 -
 127.0.0.1 - - [01/May/2014 18:44:34] "GET /admin HTTP/1.1" 301 -
+```
+
+Migrations
+
+If you have an old version of the app, you'll need to migrate your database schema to the latest version.
+Per south documentation:
+```
+python manage.py schemamigration mainapp --auto
 ```
