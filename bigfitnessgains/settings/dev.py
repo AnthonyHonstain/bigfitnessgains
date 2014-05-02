@@ -56,6 +56,11 @@ CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 
 
 ########## TOOLBAR CONFIGURATION
+#
+# PROBLEMS WITH TOOLBAR???
+#   Visit readthedocs http://django-debug-toolbar.readthedocs.org/en/1.2/index.html
+#
+
 # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
 INSTALLED_APPS += (
     'debug_toolbar',
@@ -70,7 +75,4 @@ MIDDLEWARE_CLASSES += (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
-DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
-}
 ########## END TOOLBAR CONFIGURATION
