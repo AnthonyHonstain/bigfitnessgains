@@ -8,14 +8,14 @@ Initial Dev Env Setup
 Get virtualenv, create an environment to work in, and activate your terminal.
 ```
 sudo apt-get install python-virtualenv
-virtualenv workout_env
+virtualenv workout_env --no-site-packages
 cd workout_env/
 workout_env$ source bin/activate
 ```
 NOTE - you need to run this command every time you have a new terminal you want to work with the project:
 ```
 cd workout_env/
-source bin/active
+source bin/activate
 ```
 
 Install Required Dependencies
@@ -27,6 +27,7 @@ Git - lets go ahead and auto rebase
 ```
 git config branch.autosetuprebase always
 ```
+As well, you should edit your .gitignore file to exclude the directory you're using for the virtualenv (workout_env, in this case).
 
 Setup the DB to run locally (run from the django directory that contains manage.py).
 ```
