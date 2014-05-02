@@ -2,7 +2,7 @@ BigFitnessGains
 ===========
 Django webapp for tracking workout goals.
 
-Initial Setup
+Initial Dev Env Setup
 ===========
 
 Get virtualenv, create an environment to work in, and activate your terminal.
