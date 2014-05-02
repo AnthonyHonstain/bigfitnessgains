@@ -40,7 +40,7 @@ python manage.py runserver_plus
 
 You can now connect to the admin page! http://127.0.0.1:8000/admin/
 * You should see the output in the terminal running 'runserver_plus'
-* ```
+```
 Validating models...
 0 errors found
 
