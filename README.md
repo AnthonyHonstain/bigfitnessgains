@@ -23,6 +23,11 @@ Install Required Dependencies
 sudo apt-get install python-dev build-essential libpq-dev libevent-dev libmemcached-dev postgresql-client node-less
 ```
 
+Install Django Dependencies
+```
+pip install django django-celery django-extensions django-debug_toolbar django-compressor south
+```
+
 Git - lets go ahead and auto rebase
 ```
 git config branch.autosetuprebase always
