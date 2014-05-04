@@ -25,7 +25,7 @@ sudo apt-get install python-dev build-essential libpq-dev libevent-dev libmemcac
 
 Install Django Dependencies
 ```
-pip install django django-celery django-extensions django-debug_toolbar django-compressor south Werkzeug
+pip install django django-celery django-extensions django-debug_toolbar django-compressor south Werkzeug djangorestframework django-filter	
 ```
 
 Git - lets go ahead and auto rebase
@@ -76,5 +76,5 @@ Migrations
 If you have an old version of the app, you'll need to migrate your database schema to the latest version.
 Per south documentation:
 ```
-python manage.py schemamigration mainapp --auto
+python manage.py migrate mainapp
 ```
