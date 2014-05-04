@@ -127,8 +127,11 @@ COMPRESS_JS_FILTERS += [
 
 ########## SECRET CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-# Not going to use the default key - we expect this to come from heroku side
-SECRET_KEY = environ.get('SECRET_KEY')
+# Not going to use the default key - we expect this to come from heroku side,
+# we are going to use a blank since there should be no key in the repo
+#     http://stackoverflow.com/questions/21683846/unable-to-access-heroku-config-vars-from-django-settings-py
+#     https://devcenter.heroku.com/articles/buildpack-api
+SECRET_KEY = environ.get('SECRET_KEY', '')
 ########## END SECRET CONFIGURATION
 
 ########## ALLOWED HOSTS CONFIGURATION
