@@ -127,7 +127,8 @@ COMPRESS_JS_FILTERS += [
 
 ########## SECRET CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = environ.get('SECRET_KEY', SECRET_KEY)
+# Not going to use the default key - we expect this to come from heroku side
+SECRET_KEY = environ.get('SECRET_KEY')
 ########## END SECRET CONFIGURATION
 
 ########## ALLOWED HOSTS CONFIGURATION
