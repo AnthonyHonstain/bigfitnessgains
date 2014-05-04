@@ -18,8 +18,8 @@ build
 celerybeat-schedule
 celeryev.pid
 
-# Settings
-bigfitnessgains/settings/common.py
+# Secret Settings
+bigfitnessgains/settings/settings_secret.py
 fabfile.py
 
 # Static compression
