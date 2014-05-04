@@ -19,13 +19,15 @@ source bin/activate
 ```
 
 Install Required Dependencies
+* This part is manual - the rest of the python dependencies will be installed automatically using pip in the next step.
 ```
 sudo apt-get install python-dev build-essential libpq-dev libevent-dev libmemcached-dev postgresql-client node-less
 ```
 
-Install Django Dependencies
+Install Python Project Dependencies
+* There is a dev and prod version with slightly different dependencies, also notice there is a common.txt with dependencies for both.
 ```
-pip install django django-celery django-extensions django-debug_toolbar django-compressor south Werkzeug
+pip install -r reqs/dev.txt
 ```
 
 Git - lets go ahead and auto rebase
