@@ -5,6 +5,12 @@ from os.path import join, normpath
 
 from common import *
 
+########## SECRET CONFIGURATION
+# A special file to contain login/secret info not stored in the public repo
+#
+from settings_secret import *
+########## END SECRET CONFIGURATION
+
 
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug

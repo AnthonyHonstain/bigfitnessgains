@@ -5,7 +5,7 @@ from os import environ
 
 from memcacheify import memcacheify
 from postgresify import postgresify
-from S3 import CallingFormat
+#from S3 import CallingFormat
 
 from common import *
 
@@ -85,7 +85,8 @@ INSTALLED_APPS += (
 STATICFILES_STORAGE = DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 # See: http://django-storages.readthedocs.org/en/latest/backends/amazon-S3.html#settings
-AWS_CALLING_FORMAT = CallingFormat.SUBDOMAIN
+# Disabled because current boto version seems to be missing S3 module.
+#AWS_CALLING_FORMAT = CallingFormat.SUBDOMAIN
 
 # See: http://django-storages.readthedocs.org/en/latest/backends/amazon-S3.html#settings
 AWS_ACCESS_KEY_ID = environ.get('AWS_ACCESS_KEY_ID', '')
@@ -102,7 +103,7 @@ AWS_HEADERS = {
 }
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
-STATIC_URL = 'https://s3.amazonaws.com/%s/' % AWS_STORAGE_BUCKET_NAME
+STATIC_URL = 'https://s3-us-west-2.amazonaws.com/%s/' % AWS_STORAGE_BUCKET_NAME
 ########## END STORAGE CONFIGURATION
 
 
@@ -127,7 +128,11 @@ COMPRESS_JS_FILTERS += [
 
 ########## SECRET CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = environ.get('SECRET_KEY', SECRET_KEY)
+# Not going to use the default key - we expect this to come from heroku side,
+# we are going to use a blank since there should be no key in the repo
+#     http://stackoverflow.com/questions/21683846/unable-to-access-heroku-config-vars-from-django-settings-py
+#     https://devcenter.heroku.com/articles/buildpack-api
+SECRET_KEY = environ.get('SECRET_KEY')
 ########## END SECRET CONFIGURATION
 
 ########## ALLOWED HOSTS CONFIGURATION
