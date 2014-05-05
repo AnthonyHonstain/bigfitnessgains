@@ -80,3 +80,22 @@ Per south documentation:
 ```
 python manage.py schemamigration mainapp --auto
 ```
+
+Initial Dev Env Setup
+===========
+
+### Developing Statics
+*DO NOT* Modify the bootstrap files manually, use a new custom file to hold the changes.
+* All work should be done in assets/css, assets/js, etc.
+* django-compressor should automaticall compress the resource to bigfitnessgains/static/CACHE assuming you have marked the resource in the template Example:
+** bigfitnessgains/static is ignored by git
+** TODO not sure if this is desired or not.
+```
+{% load compress %}
+    {% compress css %}
+    <link href="{{ STATIC_URL }}css/custom-styles.css" rel="stylesheet" media="all">
+    {% endcompress %}
+```
+
+
+
