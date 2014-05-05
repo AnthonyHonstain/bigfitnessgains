@@ -11,7 +11,6 @@ from bigfitnessgains.apps.mainapp.serializers import ExerciseSerializer, Exercis
 def index(request):
     return render(request, 'mainapp/index.html', None)
 
-
 @csrf_exempt
 def exercise_list(request):
 	if request.method == 'GET':
@@ -21,3 +20,34 @@ def exercise_list(request):
 
 	if request.method == 'POST':
 		pass
+
+@csrf_exempt
+def workout_list(request):
+	if request.method == 'GET':
+		workouts = Workout.objects.all()
+		serializer = WorkoutSerializer(workouts, many=True)
+		return utils.JSONResponse(serializer.data)
+
+	if request.method == 'POST':
+		pass
+
+@csrf_exempt
+def set_list(request):
+	if request.method == 'GET':
+		sets = WorkoutSet.objects.all()
+		serializer = WorkoutSetSerializer(sets, many=True)
+		return utils.JSONResponse(serializer.data)
+
+	if request.method == 'POST':
+		pass
+
+@csrf_exempt
+def muscle_group_list(request):
+	if request.method == 'GET':
+		groups = MuscleGroup.objects.all()
+		serializer = MuscleGroupSerializer(groups, many=True)
+		return utils.JSONResponse(serializer.data)
+
+	if request.method == 'POST':
+		pass
+		
