@@ -81,7 +81,7 @@ Per south documentation:
 python manage.py schemamigration mainapp --auto
 ```
 
-Initial Dev Env Setup
+Developement Guide
 ===========
 
 ### Developing Statics
