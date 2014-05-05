@@ -4,3 +4,4 @@ django-compressor
 Fabric
 South
 Sphinx
+psycopg2==2.5

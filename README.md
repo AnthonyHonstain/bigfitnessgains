@@ -36,8 +36,10 @@ git config branch.autosetuprebase always
 ```
 As well, you should edit your .gitignore file to exclude the directory you're using for the virtualenv (workout_env, in this case).
 
-Setup the DB to run locally (run from the django directory that contains manage.py).
+Create and setup the DB to run locally (run from the django directory that contains manage.py).
 ```
+createdb -E utf-8 -e bigfitnessgains
+
 python manage.py syncdb
 # The first time through you will need to create an superuser for the admin
 
@@ -72,6 +74,14 @@ Quit the server with CONTROL-C.
 127.0.0.1 - - [01/May/2014 18:44:29] "GET /favicon.ico HTTP/1.1" 404 -
 127.0.0.1 - - [01/May/2014 18:44:34] "GET /admin HTTP/1.1" 301 -
 ```
+
+Populating the database
+```
+cd bigfitnessgains/apps/mainapp/scripts
+
+psql -d bigfitnessgains -a -f populate_tables.sql
+```
+
 
 Migrations
 
