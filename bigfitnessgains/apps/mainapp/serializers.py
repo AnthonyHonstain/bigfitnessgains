@@ -30,13 +30,13 @@ class WorkoutSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Workout
-		fields = ('id', 'user_fk', 'workout_name', 'created', 'modified')
+		fields = ('id', 'user_fk', 'workout_name', 'workout_date', 'created', 'modified')
 
 class WorkoutSetSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = WorkoutSet
-		fields = ('id', 'user_fk', 'workout_fk', 'exercise_fk', 'reps', 'weight', 'created', 'modified')
+		fields = ('id', 'workout_fk', 'exercise_fk', 'reps', 'weight_lb', 'weight_kg', 'created', 'modified')
 
 
 ## http://stackoverflow.com/questions/16857450/how-to-register-users-in-django-rest-framework

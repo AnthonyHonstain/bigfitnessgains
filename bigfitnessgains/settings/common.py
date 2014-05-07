@@ -194,6 +194,9 @@ THIRD_PARTY_APPS = (
 
     # Asynchronous task queue:
     'djcelery',
+
+    # Django REST framework
+    'rest_framework',
 )
 
 LOCAL_APPS = (

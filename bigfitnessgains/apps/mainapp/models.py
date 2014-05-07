@@ -37,8 +37,8 @@ class Workout(TrackCreatedUpdatedModel):
     workout_name        = models.CharField(max_length=100)
     workout_date        = models.DateTimeField()
 
+
 class WorkoutSet(TrackCreatedUpdatedModel):
-    profile_fk          = models.ForeignKey(User)
     workout_fk          = models.ForeignKey('Workout')
     exercise_fk         = models.ForeignKey('Exercise')
     reps                = models.PositiveIntegerField()

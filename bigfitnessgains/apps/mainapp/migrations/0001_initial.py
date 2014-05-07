@@ -11,52 +11,53 @@ class Migration(SchemaMigration):
         # Adding model 'Exercise'
         db.create_table(u'mainapp_exercise', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('exercise_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
-            ('muscle_groups_fk', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mainapp.ExerciseToMuscleGroup'])),
             ('created', self.gf('django.db.models.fields.DateTimeField')()),
             ('modified', self.gf('django.db.models.fields.DateTimeField')()),
+            ('exercise_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
+            ('muscle_groups_fk', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mainapp.ExerciseToMuscleGroup'])),
         ))
         db.send_create_signal(u'mainapp', ['Exercise'])
 
         # Adding model 'ExerciseToMuscleGroup'
         db.create_table(u'mainapp_exercisetomusclegroup', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('exercise_fk', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mainapp.Exercise'])),
-            ('muscle_group_fk', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mainapp.MuscleGroup'])),
             ('created', self.gf('django.db.models.fields.DateTimeField')()),
             ('modified', self.gf('django.db.models.fields.DateTimeField')()),
+            ('exercise_fk', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mainapp.Exercise'])),
+            ('muscle_group_fk', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mainapp.MuscleGroup'])),
         ))
         db.send_create_signal(u'mainapp', ['ExerciseToMuscleGroup'])
 
         # Adding model 'MuscleGroup'
         db.create_table(u'mainapp_musclegroup', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('muscle_group_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
             ('created', self.gf('django.db.models.fields.DateTimeField')()),
             ('modified', self.gf('django.db.models.fields.DateTimeField')()),
+            ('muscle_group_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
         ))
         db.send_create_signal(u'mainapp', ['MuscleGroup'])
 
         # Adding model 'Workout'
         db.create_table(u'mainapp_workout', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user_fk', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('workout_name', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('created', self.gf('django.db.models.fields.DateTimeField')()),
             ('modified', self.gf('django.db.models.fields.DateTimeField')()),
+            ('user_fk', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('workout_name', self.gf('django.db.models.fields.CharField')(max_length=100)),
+            ('workout_date', self.gf('django.db.models.fields.DateTimeField')()),
         ))
         db.send_create_signal(u'mainapp', ['Workout'])
 
         # Adding model 'WorkoutSet'
         db.create_table(u'mainapp_workoutset', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('profile_fk', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('created', self.gf('django.db.models.fields.DateTimeField')()),
+            ('modified', self.gf('django.db.models.fields.DateTimeField')()),
             ('workout_fk', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mainapp.Workout'])),
             ('exercise_fk', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mainapp.Exercise'])),
             ('reps', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('weight', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')()),
-            ('modified', self.gf('django.db.models.fields.DateTimeField')()),
+            ('weight_lb', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
+            ('weight_kg', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
         ))
         db.send_create_signal(u'mainapp', ['WorkoutSet'])
 
@@ -144,6 +145,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'modified': ('django.db.models.fields.DateTimeField', [], {}),
             'user_fk': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
+            'workout_date': ('django.db.models.fields.DateTimeField', [], {}),
             'workout_name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         u'mainapp.workoutset': {
@@ -152,9 +154,9 @@ class Migration(SchemaMigration):
             'exercise_fk': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['mainapp.Exercise']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'modified': ('django.db.models.fields.DateTimeField', [], {}),
-            'profile_fk': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'reps': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'weight': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '2'}),
+            'weight_kg': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '2'}),
+            'weight_lb': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '2'}),
             'workout_fk': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['mainapp.Workout']"})
         }
     }
