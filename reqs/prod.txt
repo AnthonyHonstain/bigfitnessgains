@@ -1,9 +1,9 @@
 -r common.txt
-boto
+boto==2.9.5
 cssmin
 django-heroku-memcacheify
 django-heroku-postgresify
-django-storages
+django-storages==1.1.4
 gevent
 gunicorn
 jsmin
