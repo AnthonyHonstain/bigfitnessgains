@@ -1,10 +1,11 @@
 BigFitnessGains
 ===========
-Django webapp for tracking workout goals.
+Django webapp for tracking workout goals. http://bigfitnessgains.herokuapp.com/
 
 Initial Dev Env Setup
 ===========
 
+#### Virtualenv
 Get virtualenv, create an environment to work in, and activate your terminal.
 ```
 sudo apt-get install python-virtualenv
@@ -18,6 +19,7 @@ cd workout_env/
 source bin/activate
 ```
 
+#### Dependencies
 Install Required Dependencies
 * This part is manual - the rest of the python dependencies will be installed automatically using pip in the next step.
 ```
@@ -30,16 +32,30 @@ Install Python Project Dependencies
 pip install -r reqs/dev.txt
 ```
 
-Git - lets go ahead and auto rebase
+#### Database
+* We are using PostgreSQL for this project - in dev and in production.
+
+First time - install postgresql with ubuntu. Example error: *createdb: could not connect to database template1: FATAL:  role "YOUR_USER_NAME" does not exist*
 ```
-git config branch.autosetuprebase always
+sudo su
+su postgres
+createuser --interactive
 ```
-As well, you should edit your .gitignore file to exclude the directory you're using for the virtualenv (workout_env, in this case).
 
 Create and setup the DB to run locally (run from the django directory that contains manage.py).
 ```
 createdb -E utf-8 -e bigfitnessgains
+```
 
+Populating the database
+```
+cd bigfitnessgains/apps/mainapp/scripts
+
+psql -d bigfitnessgains -a -f populate_tables.sql
+```
+
+#### Start the dev server
+```
 python manage.py syncdb
 # The first time through you will need to create an superuser for the admin
 
@@ -48,8 +64,9 @@ python manage.py migrate
 python manage.py runserver_plus
 ```
 
-You can now connect to the landing page http://127.0.0.1:8000
-You can now connect to the admin page http://127.0.0.1:8000/admin/
+**EXPECTED RESULT:** 
+* You can now connect to the landing page http://127.0.0.1:8000
+* You can now connect to the admin page http://127.0.0.1:8000/admin/
 * You should see the output in the terminal running 'runserver_plus'
 ```
 Validating models...
@@ -75,12 +92,6 @@ Quit the server with CONTROL-C.
 127.0.0.1 - - [01/May/2014 18:44:34] "GET /admin HTTP/1.1" 301 -
 ```
 
-Populating the database
-```
-cd bigfitnessgains/apps/mainapp/scripts
-
-psql -d bigfitnessgains -a -f populate_tables.sql
-```
 
 
 Migrations
@@ -105,6 +116,18 @@ Developement Guide
     {% compress css %}
     <link href="{{ STATIC_URL }}css/custom-styles.css" rel="stylesheet" media="all">
     {% endcompress %}
+```
+
+Deployment Guide
+===========
+http://bigfitnessgains.herokuapp.com/
+
+**IMPORTANT** - *'heroku run python manage.py compress'* is important, so that the static resources are sent to AWS and a manifest is generated. For some reason this is not done during Heroku's compression step.
+```
+git push heroku master
+heroku run python manage.py compress
+heroku run python manage.py syncdb
+heroku run python manage.py migrate
 ```
 
 
