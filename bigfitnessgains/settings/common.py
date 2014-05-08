@@ -285,7 +285,7 @@ COMPRESS_JS_FILTERS = [
 ########## GUARDIAN and USERENA
 # http://docs.django-userena.org/en/latest/installation.html#id2
 ANONYMOUS_USER_ID = -1
-AUTH_PROFILE_MODULE = 'accounts.MyProfile'
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 
 LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
 LOGIN_URL = '/accounts/signin/'
