@@ -2,6 +2,17 @@ BigFitnessGains
 ===========
 Django webapp for tracking workout goals. http://bigfitnessgains.herokuapp.com/
 
+#### User facing pages
+* landing page - http://bigfitnessgains.herokuapp.com/ 
+* signup - http://bigfitnessgains.herokuapp.com/accounts/signup 
+ * RESULT - directed to http://bigfitnessgains.herokuapp.com/accounts/test_ant/signup/complete/ 
+ * RESULT - email should be delivered where you can activate your account, contains email link which should take you to your profile page.
+* profile page - http://bigfitnessgains.herokuapp.com/accounts/<YOUR ACCOUNT NAME HERE>/
+
+##### Admin Pages
+http://bigfitnessgains.herokuapp.com/admin/
+* From here you can manage the profiles
+
 Initial Dev Env Setup
 ===========
 
@@ -60,6 +71,7 @@ python manage.py syncdb
 # The first time through you will need to create an superuser for the admin
 
 python manage.py migrate
+heroku run python manage.py check_permissions
 
 python manage.py runserver_plus
 ```
@@ -128,6 +140,7 @@ git push heroku master
 heroku run python manage.py compress
 heroku run python manage.py syncdb
 heroku run python manage.py migrate
+heroku run python manage.py check_permissions
 ```
 
 
