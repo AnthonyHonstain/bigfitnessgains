@@ -12,8 +12,9 @@ Django webapp for tracking workout goals. http://bigfitnessgains.herokuapp.com/
  * From here you can manage the profiles
 
 #### Important References
-userena - http://docs.django-userena.org/en/latest/installation.html
-userena github - https://github.com/bread-and-pepper/django-userena
+* userena - third party app for handling user profiles
+ * userena - http://docs.django-userena.org/en/latest/installation.html
+ * userena github - https://github.com/bread-and-pepper/django-userena
 
 Initial Dev Env Setup
 ===========
