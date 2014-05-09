@@ -197,10 +197,16 @@ THIRD_PARTY_APPS = (
 
     # Django REST framework
     'rest_framework',
+
+    # django-userena - account management app
+    'userena',
+    'guardian',
+    'easy_thumbnails',
 )
 
 LOCAL_APPS = (
     'bigfitnessgains.apps.mainapp',
+    'bigfitnessgains.apps.accounts',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -275,3 +281,24 @@ COMPRESS_JS_FILTERS = [
     'compressor.filters.template.TemplateFilter',
 ]
 ########## END COMPRESSION CONFIGURATION
+
+########## GUARDIAN and USERENA
+# http://docs.django-userena.org/en/latest/installation.html#id2
+ANONYMOUS_USER_ID = -1
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+
+LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
+LOGIN_URL = '/accounts/signin/'
+LOGOUT_URL = '/accounts/signout/'
+
+AUTHENTICATION_BACKENDS = (
+    'userena.backends.UserenaAuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+########## END GUARDIAN and USERENA
+
+
+SOUTH_MIGRATION_MODULES = {
+    'easy_thumbnails': 'easy_thumbnails.south_migrations',
+}

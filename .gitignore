@@ -28,3 +28,4 @@ bigfitnessgains/static/CACHE
 # Eclipse project
 .project
 .pydevproject
+.settings
