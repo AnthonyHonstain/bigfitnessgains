@@ -8,10 +8,12 @@ Django webapp for tracking workout goals. http://bigfitnessgains.herokuapp.com/
  * RESULT - directed to http://bigfitnessgains.herokuapp.com/accounts/test_ant/signup/complete/ 
  * RESULT - email should be delivered where you can activate your account, contains email link which should take you to your profile page.
 * profile page - http://bigfitnessgains.herokuapp.com/accounts/<YOUR ACCOUNT NAME HERE>/
+* Admin Pages - http://bigfitnessgains.herokuapp.com/admin/
+ * From here you can manage the profiles
 
-##### Admin Pages
-http://bigfitnessgains.herokuapp.com/admin/
-* From here you can manage the profiles
+#### Important References
+userena - http://docs.django-userena.org/en/latest/installation.html
+userena github - https://github.com/bread-and-pepper/django-userena
 
 Initial Dev Env Setup
 ===========
