@@ -68,6 +68,20 @@ cd bigfitnessgains/apps/mainapp/scripts
 psql -d bigfitnessgains -a -f populate_tables.sql
 ```
 
+Inspect DB via the shell
+```
+psql -d bigfitnessgains
+bigfitnessgains=# \?
+bigfitnessgains=# \dt main*
+ public | mainapp_exercise              | table | rcstats
+ public | mainapp_exercisetomusclegroup | table | rcstats
+ public | mainapp_musclegroup           | table | rcstats
+ public | mainapp_workout               | table | rcstats
+ public | mainapp_workoutset            | table | rcstats
+
+```
+
+
 #### Start the dev server
 ```
 python manage.py syncdb
