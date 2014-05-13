@@ -1,9 +1,20 @@
+from bigfitnessgains.apps.mainapp.models import Exercise
 from bigfitnessgains.apps.mainapp.models import Workout
+from bigfitnessgains.apps.mainapp.serializers import ExerciseSerializer
 from bigfitnessgains.apps.mainapp.serializers import WorkoutSerializer
 from django.http import Http404
+from rest_framework.generics import (ListCreateAPIView,
+                                     RetrieveUpdateDestroyAPIView,
+                                     )
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+
+class ExercisesList(ListCreateAPIView):
+    queryset = Exercise.objects.all()
+    serializer_class = ExerciseSerializer
+
 
 class WorkoutListAPI(APIView):
 
@@ -19,8 +30,9 @@ class WorkoutListAPI(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class WorkoutDetailAPI(APIView):
-    
+
     def _get_object(self, pk):
         try:
             return Workout.objects.get(pk=pk)
