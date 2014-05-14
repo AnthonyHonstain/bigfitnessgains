@@ -11,7 +11,9 @@ class ExerciseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exercise
-        fields = ('id', 'exercise_name', 'muscle_groups_fk', 'created', 'modified')
+        # Removing modified field, REST api expects modified field as input
+        #(which is  a problem because we expect the model to set it).
+        fields = ('id', 'exercise_name', 'muscle_group_fk') #, 'created', 'modified')
 
 
 # class ExerciseToMuscleGroupSerializer(serializers.ModelSerializer):
