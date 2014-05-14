@@ -10,8 +10,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'', include('bigfitnessgains.apps.mainapp.urls')),
 
-    # userena accounts
-    url(r'^accounts/', include('userena.urls')),
+    # userena accounts - direct to the urls define in our accounts app
+    url(r'^accounts/', include('bigfitnessgains.apps.accounts.urls')),
 
     # Admin panel and documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
