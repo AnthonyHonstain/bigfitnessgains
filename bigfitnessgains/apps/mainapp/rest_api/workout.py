@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+
 class WorkoutListAPI(APIView):
 
     def get(self, request, format=None):
@@ -19,8 +20,9 @@ class WorkoutListAPI(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class WorkoutDetailAPI(APIView):
-    
+
     def _get_object(self, pk):
         try:
             return Workout.objects.get(pk=pk)

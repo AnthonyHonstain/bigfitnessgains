@@ -1,10 +1,17 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 
-## save() auto-date method reference: 
+## save() auto-date method reference:
 ## http://stackoverflow.com/questions/1737017/django-auto-now-and-auto-now-add/1737078#1737078
 
 class TrackCreatedUpdatedModel(models.Model):
+    '''
+    Note we have implemented our own instead of using the auto create/modified
+    functionality provided by django.
+        http://stackoverflow.com/questions/1737017/django-auto-now-and-auto-now-add/1737078#1737078
+    '''
     created             = models.DateTimeField(editable=False)
     modified            = models.DateTimeField()
 
@@ -18,19 +25,20 @@ class TrackCreatedUpdatedModel(models.Model):
         self.modified = datetime.datetime.today()
         return super(TrackCreatedUpdatedModel, self).save(*args, **kwargs)
 
+
 class Exercise(TrackCreatedUpdatedModel):
     exercise_name       = models.CharField(max_length=100, unique=True)
-    muscle_groups_fk    = models.ForeignKey('ExerciseToMuscleGroup')
-    
+    muscle_group_fk    = models.ForeignKey('MuscleGroup')
 
-class ExerciseToMuscleGroup(TrackCreatedUpdatedModel):
-    exercise_fk         = models.ForeignKey('Exercise')
-    muscle_group_fk     = models.ForeignKey('MuscleGroup')
+
+# class ExerciseToMuscleGroup(TrackCreatedUpdatedModel):
+#     exercise_fk         = models.ForeignKey('Exercise')
+#     muscle_group_fk     = models.ForeignKey('MuscleGroup')
 
 
 class MuscleGroup(TrackCreatedUpdatedModel):
     muscle_group_name   = models.CharField(max_length=100, unique=True)
-    
+
 
 class Workout(TrackCreatedUpdatedModel):
     user_fk             = models.ForeignKey(User)
