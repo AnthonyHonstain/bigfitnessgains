@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}
+BigFitnessGains
+{% endblock %}
+
+{% block description %}
+Track weightlifting results.
+{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1>Create Workout</h1>
+    <p>Creat a new workout.</p>
+</div>
+
+<div class="container">
+
+    <h2>New Workout</h2>
+    <form action="/workout/" method="post">
+    {% csrf_token %}
+
+    {% comment %}
+    <!--
+    Need to consider better date time picking options -
+    http://stackoverflow.com/questions/15643019/datetime-field-in-django-form-model
+     -->
+    {% endcomment %}
+
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+    </form>
+
+    <div class="row">
+    {% for workout in workouts %}
+        <div class="col-md-6">
+        {% comment %}
+        <!--
+        TODO - workout diplay should be broken off into a template we can share (wont just appear here).
+        -->
+        {% endcomment %}
+        <p><a href="{% url 'workout_detail'  workout.id  %}" >{{ workout.workout_name }} {{ workout.workout_date }}</a></p>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
