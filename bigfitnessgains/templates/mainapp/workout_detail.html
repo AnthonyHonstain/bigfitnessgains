@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}
+BigFitnessGains
+{% endblock %}
+
+{% block description %}
+Track weightlifting results.
+{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1>{{ workout.workout_name }}</h1>
+    <p>{{ workout.workout_date }}</p>
+</div>
+
+<div class="container">
+
+    <h2>New Workout</h2>
+    <form action="{% url 'workout_detail'  workout.id  %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+    </form>
+
+    <div class="row">
+    {% for workout_set in workout_sets %}
+        <div class="col-md-6">
+
+            {% comment %}
+            <!--
+            TODO - workoutset should be broken off into a template we can share (wont just appear here).
+            -->
+            {% endcomment %}
+
+            <h3>Exercise: {{ workout_set.exercise_fk.exercise_name }}</h3>
+            <p> Reps: {{ workout_set.reps }}</p>
+            <p>
+            Weight (lbs): {{ workout_set.weight_lb }}
+            Weight (kg): {{ workout_set.weight_kg }}
+            </p>
+       </div>
+    {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

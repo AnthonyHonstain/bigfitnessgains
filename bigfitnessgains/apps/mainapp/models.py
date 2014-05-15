@@ -30,6 +30,8 @@ class Exercise(TrackCreatedUpdatedModel):
     exercise_name       = models.CharField(max_length=100, unique=True)
     muscle_group_fk    = models.ForeignKey('MuscleGroup')
 
+    def __str__(self):
+        return self.exercise_name
 
 # class ExerciseToMuscleGroup(TrackCreatedUpdatedModel):
 #     exercise_fk         = models.ForeignKey('Exercise')
@@ -39,11 +41,16 @@ class Exercise(TrackCreatedUpdatedModel):
 class MuscleGroup(TrackCreatedUpdatedModel):
     muscle_group_name   = models.CharField(max_length=100, unique=True)
 
+    def __str__(self):
+        return self.muscle_group_name
 
 class Workout(TrackCreatedUpdatedModel):
     user_fk             = models.ForeignKey(User)
     workout_name        = models.CharField(max_length=100)
     workout_date        = models.DateTimeField()
+
+    def __str__(self):
+        return self.workout_name
 
 
 class WorkoutSet(TrackCreatedUpdatedModel):
@@ -52,3 +59,7 @@ class WorkoutSet(TrackCreatedUpdatedModel):
     reps                = models.PositiveIntegerField()
     weight_lb           = models.DecimalField(max_digits=10, decimal_places=2)
     weight_kg           = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        # TODO - notice extra query here
+        return '{0} - {1}'.format(self.workout_fk.workout_name, self.exercise_fk)
