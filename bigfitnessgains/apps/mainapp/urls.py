@@ -7,6 +7,8 @@ import views
 
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
+    url(r'^workout/$', views.workout, name='workout'),
+    url(r'^workout_detail/(?P<pk>[0-9]+)/$', views.workout_detail, name='workout_detail'),
 
     url(r'^exercise/$', ExerciseList.as_view(), name='exercise_list'),
     url(r'^exercise/(?P<pk>[0-9]+)$', ExerciseDetail.as_view(), name='exercise_detail'),
