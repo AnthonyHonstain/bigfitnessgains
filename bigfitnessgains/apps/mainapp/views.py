@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
@@ -65,7 +66,9 @@ def workout_detail(request, pk):
     and weights) to the given workout.
     '''
     workout = get_object_or_404(Workout, pk=pk)
-    workout_sets = WorkoutSet.objects.filter(workout_fk=workout.id).select_related("exercise_fk")
+    if workout.user_fk != request.user:
+        raise Http404
+    workout_sets = WorkoutSet.objects.filter(workout_fk=workout.id).select_related("exercise_fk").order_by("id")
 
     if request.method == 'POST':
         form = WorkoutSetForm(request.POST)
@@ -74,7 +77,7 @@ def workout_detail(request, pk):
             workout_set_model.workout_fk = workout
             workout_set_model.save()
             # TODO - fix redirect link
-            return HttpResponseRedirect('/workout_detail/' + str(workout.id))
+            return HttpResponseRedirect('/workout_detail/' + str(workout.id) + "/#addworkout")
     else:
         form = WorkoutSetForm()
 

@@ -1,0 +1,31 @@
+{% comment %} <!--
+
+Required:
+    workout_sets - list of WorkoutSet objects to be displayed.
+
+--> {% endcomment %}
+
+<div class="table-responsive">
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Exercise</th>
+                <th>Reps</th>
+                <th>Weight (lbs)</th>
+                <th>Weight (kg)</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for workout_set in workout_sets %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ workout_set.exercise_fk.exercise_name }}</td>
+                <td>{{ workout_set.reps }}</td>
+                <td>{{ workout_set.weight_lb }}</td>
+                <td>{{ workout_set.weight_kg }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
