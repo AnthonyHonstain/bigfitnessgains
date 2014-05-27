@@ -56,9 +56,9 @@ class Workout(TrackCreatedUpdatedModel):
 class WorkoutSet(TrackCreatedUpdatedModel):
     workout_fk          = models.ForeignKey('Workout')
     exercise_fk         = models.ForeignKey('Exercise')
-    reps                = models.PositiveIntegerField()
-    weight_lb           = models.DecimalField(max_digits=10, decimal_places=2)
-    weight_kg           = models.DecimalField(max_digits=10, decimal_places=2)
+    reps                = models.PositiveIntegerField(default=1)
+    weight_lb           = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    weight_kg           = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         # TODO - notice extra query here
