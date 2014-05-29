@@ -7,29 +7,25 @@ from rest_framework import serializers
 ## TODO: add transforms and validations where appropriate
 
 
+class MuscleGroupSerializer(serializers.ModelSerializer):
+    """ Also may not be needed in the REST API """
+
+    # TODO: figure out how to expose is_primary through the API for each muscle group in an exercise
+
+    class Meta:
+        model = MuscleGroup
+        fields = ('id', 'muscle_group_name', 'created', 'modified')
+
+
 class ExerciseSerializer(serializers.ModelSerializer):
+
+    muscle_groups = MuscleGroupSerializer(many=True)
 
     class Meta:
         model = Exercise
         # Removing modified field, REST api expects modified field as input
         #(which is  a problem because we expect the model to set it).
-        fields = ('id', 'exercise_name', 'muscle_group_fk') #, 'created', 'modified')
-
-
-# class ExerciseToMuscleGroupSerializer(serializers.ModelSerializer):
-#     """ We may not need this """
-#
-#     class Meta:
-#         model = ExerciseToMuscleGroup
-#         fields = ('id', 'exercise_fk', 'muscle_group_fk', 'created', 'modified')
-
-
-class MuscleGroupSerializer(serializers.ModelSerializer):
-    """ Also may not be needed in the REST API """
-
-    class Meta:
-        model = MuscleGroup
-        fields = ('id', 'muscle_group_name', 'created', 'modified')
+        fields = ('id', 'exercise_name', 'muscle_groups') #, 'created', 'modified')
 
 
 class WorkoutSerializer(serializers.ModelSerializer):

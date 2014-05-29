@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 ## save() auto-date method reference:
 ## http://stackoverflow.com/questions/1737017/django-auto-now-and-auto-now-add/1737078#1737078
 
+
 class TrackCreatedUpdatedModel(models.Model):
     '''
     Note we have implemented our own instead of using the auto create/modified
@@ -26,23 +27,27 @@ class TrackCreatedUpdatedModel(models.Model):
         return super(TrackCreatedUpdatedModel, self).save(*args, **kwargs)
 
 
+class ExerciseToMuscleGroup(TrackCreatedUpdatedModel):
+    exercise_fk         = models.ForeignKey('Exercise')
+    muscle_group_fk     = models.ForeignKey('MuscleGroup')
+    is_primary          = models.BooleanField()
+
+
 class Exercise(TrackCreatedUpdatedModel):
     exercise_name       = models.CharField(max_length=100, unique=True)
-    muscle_group_fk    = models.ForeignKey('MuscleGroup')
+    muscle_groups       = models.ManyToManyField('MuscleGroup', through=ExerciseToMuscleGroup)
 
     def __str__(self):
         return self.exercise_name
 
-# class ExerciseToMuscleGroup(TrackCreatedUpdatedModel):
-#     exercise_fk         = models.ForeignKey('Exercise')
-#     muscle_group_fk     = models.ForeignKey('MuscleGroup')
-
 
 class MuscleGroup(TrackCreatedUpdatedModel):
     muscle_group_name   = models.CharField(max_length=100, unique=True)
+    exercises           = models.ManyToManyField('Exercise', through=ExerciseToMuscleGroup)
 
     def __str__(self):
         return self.muscle_group_name
+
 
 class Workout(TrackCreatedUpdatedModel):
     user_fk             = models.ForeignKey(User)
