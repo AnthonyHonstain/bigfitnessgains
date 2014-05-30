@@ -1,10 +1,9 @@
-from datetime import datetime
-
+import json
+from django.utils import timezone
 from django.test import TestCase
 from django.test.client import Client
-from bigfitnessgains.apps.mainapp import models
 from django.contrib.auth import models as core_models
-
+from bigfitnessgains.apps.mainapp import models
 
 class TestExerciseAPI(TestCase):
 
@@ -23,6 +22,7 @@ class TestExerciseAPI(TestCase):
         self.assertEqual(resp.status_code, 200)
         
     def test_exercise_post_api(self):
+        ### not supported yet
         pass
 
 
@@ -43,7 +43,15 @@ class TestWorkoutAPI(TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_workout_post_api(self):
-        pass
+        user = core_models.User.objects.get(username='atestuser')
+        data = { 'user_fk' : user.id,
+                'workout_name' : 'Yet another leg day joke',
+                'workout_date' : '2014-01-01T12:00+08:00'}
+        resp = self.client.post('/workouts/', data)
+        self.assertEqual(resp.status_code, 200)
+        json_body = json.loads(resp.content)
+        ## assert we've returned a new id for the new record
+        self.assertTrue(isinstance(json_body.get('id', None), int))
 
 
 class TestWorkoutSetAPI(TestCase):
@@ -60,11 +68,23 @@ class TestWorkoutSetAPI(TestCase):
         sets = models.WorkoutSet.objects.all()
         set_pk = sets[0].id
         resp = self.client.get('/workout_sets/{0}/'.format(set_pk))
-        pass
+        self.assertEqual(resp.status_code, 200)
 
     def test_workout_set_post_api(self):
-        pass
-
+        user = core_models.User.objects.get(username='atestuser')
+        leg_workout = models.Workout.objects.get(user_fk=user, workout_name="Erry day is leg day")
+        exercise = models.Exercise.objects.get(exercise_name='Caber Toss')
+        data = { 'workout_fk' : leg_workout.id,
+                'exercise_fk' : exercise.id,
+                'reps' : 10,
+                'weight_lb' : 100,
+                'weight_kg' : 45}
+        ## next, test POSTS with only LB or only KG
+        resp = self.client.post('/workout_sets/', data)
+        self.assertEqual(resp.status_code, 200)
+        json_body = json.loads(resp.content)
+        ## assert we've returned a new id for the new record
+        self.assertTrue(isinstance(json_body.get('id', None), int))
 
 def _setup_database():
     ''' set up a few muscle groups, exercises, some workouts and some sets for a workout
@@ -79,9 +99,9 @@ def _setup_database():
     _create_exercise("Truck Pull", muscle_group_fks[:len(muscle_group_fks) - 1])
     _create_exercise("Caber Toss", muscle_group_fks)
 
-    _create_workout(user, "Leg day", datetime(2014, 5, 1))
-    _create_workout(user, "Also leg day", datetime(2014, 5, 3))
-    _create_workout(user, "Erry day is leg day", datetime(2014, 5, 5))
+    _create_workout(user, "Leg day", timezone.now())
+    _create_workout(user, "Also leg day", timezone.now())
+    _create_workout(user, "Erry day is leg day", timezone.now())
 
     leg_exercise = models.Exercise.objects.get(exercise_name="Truck Pull")
     leg_workout = models.Workout.objects.get(user_fk=user, workout_name="Erry day is leg day")
@@ -103,7 +123,7 @@ def _create_muscle_group(name):
     models.MuscleGroup.objects.create(muscle_group_name=name)
 
 
-def _create_workout(user, workout_name, workout_date=datetime.now()):
+def _create_workout(user, workout_name, workout_date=timezone.now()):
     models.Workout.objects.create(user_fk=user,
                                 workout_name=workout_name,
                                 workout_date=workout_date)
