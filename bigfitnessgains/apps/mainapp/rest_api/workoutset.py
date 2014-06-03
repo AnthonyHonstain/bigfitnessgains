@@ -36,8 +36,6 @@ class WorkoutSetDetailAPI(APIView):
     def put(self, request, pk, format=None):
         w_set = self._get_object(pk)
         serializer = WorkoutSetSerializer(w_set, data=request.DATA)
-        print
-        print serializer.data
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

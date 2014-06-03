@@ -19,18 +19,34 @@ Track weightlifting results.
     <h4><a name="addworkout">Add Workout</a></h4>
     <form action="{% url 'workout_detail'  workout.id  %}" method="post">
     {% csrf_token %}
+    {% comment %}
+    <!-- TODO - modify form to include this field (so its easy to retrieve from the javascript -->
+    {% endcomment %}
+    <input type="hidden" id="id_workout_fk" value={{ workout.id }} />
     {{ form.as_p }}
-    <input type="submit" value="Submit" />
+    <input type="submit" value="FormSubmit (SLOW)»" />
     </form>
 
-    <p id="FOO">FOO DUMP</p>
-
-    <input type="submit" id="TestSubmit" value="TestSubmit" />
+    <input type="submit" id="ajaxSubmit" value="AjaxSubmit (FAST)»" /> Warning: Error handling sucks.
+    <div class="modal"><!-- Place at bottom of page --></div>
 </div>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 <script>
 $(document).ready(function(){
+    // -----------------------------------------------------------------------------
+    // Spinner for ajax requests.
+    // -----------------------------------------------------------------------------
+    // http://stackoverflow.com/questions/1964839/jquery-please-wait-loading-animation
+    $body = $("body");
+    $(document).on({
+        ajaxStart: function() { $body.addClass("loading");    },
+         ajaxStop: function() { $body.removeClass("loading"); }
+    });
+
+    // -----------------------------------------------------------------------------
+    // Ajax POST functionality to work with Django CSRF token
+    // -----------------------------------------------------------------------------
     // using jQuery - https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax
     function getCookie(name) {
         var cookieValue = null;
@@ -49,39 +65,6 @@ $(document).ready(function(){
     }
     var csrftoken = getCookie('csrftoken');
 
-
-  $("p").click(function(){
-    $(this).hide();
-  });
-  $("#TestSubmit").click(function(){
-
-      //$("table tbody").append( "<tr>"+
-      //        "<td><input type='text'/></td>"+
-      //        "<td><input type='text'/></td>"+
-      //        "<td><input type='text'/></td>"+
-      //        "</tr>");
-
-
-    $.ajax({
-         url: "http://127.0.0.1:8000/workout_sets/1/",
-         type: "GET",
-
-            contentType: 'application/json; charset=utf-8',
-            success: function(resultData) {
-                //here is your json.
-                  // process it
-                  $("p#FOO").append(resultData.weight_lb);
-                  //http://stackoverflow.com/questions/15945278/how-to-get-json-data-from-the-urlrest-api-to-ui-using-jquery-or-java-script
-                  console.log(resultData);
-
-            },
-            error : function(jqXHR, textStatus, errorThrown) {
-            },
-
-            timeout: 120000,
-        });
-
-
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -99,45 +82,54 @@ $(document).ready(function(){
             // or any other URL that isn't scheme relative or absolute i.e relative.
             !(/^(\/\/|http:|https:).*/.test(url));
     }
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-                // Send the token to same-origin, relative URLs only.
-                // Send the token only if the method warrants CSRF protection
-                // Using the CSRFToken value acquired earlier
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+
+    // -----------------------------------------------------------------------------
+    // Ajax POST to REST API
+    // -----------------------------------------------------------------------------
+    $("#ajaxSubmit").click(function(){
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                    // Send the token to same-origin, relative URLs only.
+                    // Send the token only if the method warrants CSRF protection
+                    // Using the CSRFToken value acquired earlier
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
             }
-        }
+        });
+
+        $.ajax({
+            url: "http://127.0.0.1:8000/workout_sets/",
+            contentType:"application/json; charset=utf-8",
+            dataType: "json",
+            // JSON.stringify needed for http://stackoverflow.com/questions/5570747/jquery-posting-json
+            data: JSON.stringify({
+                "workout_fk": $("#id_workout_fk").val(),
+                "exercise_fk": $("#id_exercise_fk").val(),
+                "reps": $("#id_reps").val(),
+                "weight_lb": $("#id_weight_lb").val(),
+                "weight_kg": $("#id_weight_kg").val(),
+                    }),
+            type: 'POST',
+
+            // http://stackoverflow.com/questions/2833951/how-to-catch-ajax-query-post-error
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log(errorThrown);
+                alert(errorThrown);
+            },
+            success: function(resultData) {
+                console.log("POST resultData " + resultData),
+                $("table tbody").append("<tr>"+
+                        "<td>" + "AJAX" + "</td>"+
+                        "<td>" + resultData.exercise_fk + "</td>"+
+                        "<td>" + resultData.reps + "</td>"+
+                        "<td>" + resultData.weight_lb + "</td>"+
+                        "<td>" + resultData.weight_kg + "</td>"+
+                        "</tr>");
+            },
+        });
     });
-
-    // http://stackoverflow.com/questions/6506897/csrf-token-missing-or-incorrect-while-post-parameter-via-ajax-in-django
-    //$.ajaxSetup({
-    //    headers: { "X-CSRFToken": csrftoken }
-    //});
-    $.ajax({
-        url: "http://127.0.0.1:8000/workout_sets/",
-        contentType:"application/json",
-        //headers: { "X-CSRFToken": csrftoken },
-        dataType: "json",
-        data: {
-            "workout_fk": 1,
-            "exercise_fk": 16,
-            "reps": 1,
-            "weight_lb": "115.00",
-            "weight_kg": "0.00",
-                },
-        type: 'POST',
-
-        // http://stackoverflow.com/questions/2833951/how-to-catch-ajax-query-post-error
-        //error: function(XMLHttpRequest, textStatus, errorThrown) {
-        //    console.log(errorThrown);
-        //    alert("some error");
-        // }
-    });
-
-
-  });
-
 });
 </script>
 
