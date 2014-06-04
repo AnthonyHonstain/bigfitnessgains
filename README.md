@@ -169,5 +169,12 @@ heroku run python manage.py migrate
 heroku run python manage.py check_permissions
 ```
 
+Testing Guide
+============
+Tests for the main app are located in the /bigfitnessgains/apps/mainapp/tests folder, split out based on functionality.
 
+To run tests, from the command line:
+```
+python manage.py test bigfitnessgains.apps.mainapp.test
+```
 

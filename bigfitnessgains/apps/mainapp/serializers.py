@@ -14,7 +14,8 @@ class MuscleGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MuscleGroup
-        fields = ('id', 'muscle_group_name', 'created', 'modified')
+        fields = ('id', 'muscle_group_name')
+        read_only_fields = ('created', 'modified')
 
 
 class ExerciseSerializer(serializers.ModelSerializer):
@@ -25,21 +26,24 @@ class ExerciseSerializer(serializers.ModelSerializer):
         model = Exercise
         # Removing modified field, REST api expects modified field as input
         #(which is  a problem because we expect the model to set it).
-        fields = ('id', 'exercise_name', 'muscle_groups') #, 'created', 'modified')
+        fields = ('id', 'exercise_name', 'muscle_groups')
+        read_only_fields = ('created', 'modified')
 
 
 class WorkoutSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workout
-        fields = ('id', 'user_fk', 'workout_name', 'workout_date', 'created', 'modified')
+        fields = ('id', 'user_fk', 'workout_name', 'workout_date')
+        read_only_fields = ('created', 'modified')
 
 
 class WorkoutSetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkoutSet
-        fields = ('id', 'workout_fk', 'exercise_fk', 'reps', 'weight_lb', 'weight_kg', 'created', 'modified')
+        fields = ('id', 'workout_fk', 'exercise_fk', 'reps', 'weight_lb', 'weight_kg')
+        read_only_fields = ('created', 'modified')
 
 
 ## http://stackoverflow.com/questions/16857450/how-to-register-users-in-django-rest-framework
