@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
+from django_measurement.fields import MeasurementField
 
 ## save() auto-date method reference:
 ## http://stackoverflow.com/questions/1737017/django-auto-now-and-auto-now-add/1737078#1737078
@@ -61,8 +62,7 @@ class WorkoutSet(TrackCreatedUpdatedModel):
     workout_fk          = models.ForeignKey('Workout')
     exercise_fk         = models.ForeignKey('Exercise')
     reps                = models.PositiveIntegerField(default=1)
-    weight_lb           = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    weight_kg           = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    weight              = MeasurementField()
 
     def __str__(self):
         # TODO - notice extra query here

@@ -4,6 +4,7 @@ from django.utils.translation import ugettext as _
 from userena.models import UserenaBaseProfile
 
 class UserProfile(UserenaBaseProfile):
+
     user = models.OneToOneField(User,
                                 unique=True,
                                 verbose_name=_('user'),
@@ -12,6 +13,11 @@ class UserProfile(UserenaBaseProfile):
                                     max_length=60)
     fitness_focus = models.CharField(_('fitness focus'),
                                     max_length=60)
+    weight_unit = models.CharField(_('preferred unit of weight'),
+                                    max_length=2,
+                                    choices=(('kg', 'kg'),
+                                            ('lb', 'lb')),
+                                    default='lb')
     # really just to see if anybody fills this out
     spirit_animal = models.CharField(_('spirit animal'),
                                     max_length=60)

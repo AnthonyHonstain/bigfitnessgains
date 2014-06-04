@@ -58,7 +58,6 @@ def workout(request):
         'workouts': workouts,
     })
 
-
 @login_required(login_url='/accounts/signin/')
 def workout_detail(request, pk):
     '''
@@ -81,8 +80,15 @@ def workout_detail(request, pk):
     else:
         form = WorkoutSetForm()
 
+    # convert to user's preference of weight format
+    # http://stackoverflow.com/questions/2115869/calling-python-function-in-django-template
+    user_profile = request.user.user_profile
+    for w_set in workout_sets:
+        setattr(w_set, 'converted_weight', getattr(w_set.weight, user_profile.weight_unit))
+
     return render(request, 'mainapp/workout_detail.html', {
         'form': form,
         'workout': workout,
         'workout_sets': workout_sets,
+        'user_profile': user_profile,
     })

@@ -2,6 +2,8 @@
 from django import forms
 from models import Workout
 from models import WorkoutSet
+from django_measurement.forms import MeasurementFormMixin, MeasurementFormField
+from measurement.measures import Weight
 
 
 class WorkoutForm(forms.ModelForm):
@@ -11,7 +13,9 @@ class WorkoutForm(forms.ModelForm):
         exclude = ['user_fk', 'modified']
 
 
-class WorkoutSetForm(forms.ModelForm):
+class WorkoutSetForm(MeasurementFormMixin, forms.ModelForm):
+
+    weight = MeasurementFormField(measurement=Weight, choices=(('kg', 'kg'), ('lb', 'lb')))
 
     class Meta:
         model = WorkoutSet
