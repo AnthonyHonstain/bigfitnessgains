@@ -21,10 +21,10 @@ class WorkoutSetListAPI(APIView):
 
 
 class WorkoutSetDetailAPI(APIView):
-    
+
     def _get_object(self, pk):
         try:
-            WorkoutSet.objects.get(pk=pk)
+            return WorkoutSet.objects.get(pk=pk)
         except WorkoutSet.DoesNotExist:
             return Http404
 
