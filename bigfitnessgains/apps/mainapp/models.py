@@ -1,5 +1,4 @@
-import datetime
-
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -22,8 +21,8 @@ class TrackCreatedUpdatedModel(models.Model):
     def save(self, *args, **kwargs):
         """ On save, update timestamps """
         if not self.id:
-            self.created = datetime.datetime.today()
-        self.modified = datetime.datetime.today()
+            self.created = timezone.now()
+        self.modified = timezone.now()
         return super(TrackCreatedUpdatedModel, self).save(*args, **kwargs)
 
 
