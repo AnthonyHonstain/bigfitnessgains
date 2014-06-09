@@ -31,7 +31,19 @@ Track weightlifting results.
     <div class="modal"><!-- Place at bottom of page --></div>
 </div>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+{% endblock %}
+
+{% block script %}
+<script>
+/*
+ * Drag and drop functionality for table of workout results.
+ */
+$(function() {
+    $( "#sortable  > *" ).sortable();
+    $( "#sortable  > *" ).disableSelection();
+});
+</script>
+
 <script>
 $(document).ready(function(){
     // -----------------------------------------------------------------------------
