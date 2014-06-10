@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'UserProfile.weight_unit'
         db.add_column(u'accounts_userprofile', 'weight_unit',
-                      self.gf('django.db.models.fields.CharField')(default='lbs', max_length=3),
+                      self.gf('django.db.models.fields.CharField')(default='lb', max_length=3),
                       keep_default=False)
 
 
@@ -29,7 +29,7 @@ class Migration(SchemaMigration):
             'privacy': ('django.db.models.fields.CharField', [], {'default': "'registered'", 'max_length': '15'}),
             'spirit_animal': ('django.db.models.fields.CharField', [], {'max_length': '60'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'user_profile'", 'unique': 'True', 'to': u"orm['auth.User']"}),
-            'weight_unit': ('django.db.models.fields.CharField', [], {'default': "'lbs'", 'max_length': '3'})
+            'weight_unit': ('django.db.models.fields.CharField', [], {'default': "'lb'", 'max_length': '3'})
         },
         u'auth.group': {
             'Meta': {'object_name': 'Group'},

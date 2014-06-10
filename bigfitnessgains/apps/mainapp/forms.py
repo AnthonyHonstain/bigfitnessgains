@@ -15,7 +15,8 @@ class WorkoutForm(forms.ModelForm):
 
 class WorkoutSetForm(MeasurementFormMixin, forms.ModelForm):
 
-    weight = MeasurementFormField(measurement=Weight, choices=(('kg', 'kg'), ('lb', 'lb')))
+    # TODO - order drop down based on user preference.
+    weight = MeasurementFormField(measurement=Weight, choices=(('lb', 'lb'), ('kg', 'kg')))
 
     class Meta:
         model = WorkoutSet
