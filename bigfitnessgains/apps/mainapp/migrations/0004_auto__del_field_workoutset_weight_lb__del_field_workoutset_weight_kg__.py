@@ -16,12 +16,12 @@ class Migration(SchemaMigration):
 
         # Adding field 'WorkoutSet.weight_unit'
         db.add_column(u'mainapp_workoutset', 'weight_unit',
-                      self.gf('django_measurement.fields.OriginalUnitField')(default='', max_length=50, blank=True),
+                      self.gf('django_measurement.fields.OriginalUnitField')(default='lb', max_length=50, blank=True),
                       keep_default=False)
 
         # Adding field 'WorkoutSet.weight_measure'
         db.add_column(u'mainapp_workoutset', 'weight_measure',
-                      self.gf('django_measurement.fields.MeasureNameField')(default='', max_length=255, blank=True),
+                      self.gf('django_measurement.fields.MeasureNameField')(default='Weight(g)', max_length=255, blank=True),
                       keep_default=False)
 
         # Adding field 'WorkoutSet.weight_value'
@@ -129,8 +129,8 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'modified': ('django.db.models.fields.DateTimeField', [], {}),
             'reps': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
-            'weight_measure': ('django_measurement.fields.MeasureNameField', [], {'default': "''", 'max_length': '255', 'blank': 'True'}),
-            'weight_unit': ('django_measurement.fields.OriginalUnitField', [], {'default': "''", 'max_length': '50', 'blank': 'True'}),
+            'weight_measure': ('django_measurement.fields.MeasureNameField', [], {'default': "Weight(g)", 'max_length': '255', 'blank': 'True'}),
+            'weight_unit': ('django_measurement.fields.OriginalUnitField', [], {'default': "lb", 'max_length': '50', 'blank': 'True'}),
             'weight_value': ('django_measurement.fields.MeasurementValueField', [], {'default': '0.0', 'max_length': '50', 'blank': 'True'}),
             'workout_fk': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['mainapp.Workout']"})
         }
