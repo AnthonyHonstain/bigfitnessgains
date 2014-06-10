@@ -1,19 +1,22 @@
 from bigfitnessgains.apps.mainapp.models import WorkoutSet
-from bigfitnessgains.apps.mainapp.serializers import WorkoutSetSerializer
+from bigfitnessgains.apps.mainapp.serializers import WorkoutSetBaseSerializer, WorkoutSetGetSerializer
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-class WorkoutSetListAPI(APIView):
 
+class WorkoutSetListAPI(APIView):
+    ''' Defines an APIView class to use for WorkoutSet object REST requests.
+        See notes on WorkoutSetBaseSerializer vs WorkoutSetGetSerializer in serializers.py
+    '''
     def get(self, request, format=None):
         sets = WorkoutSet.objects.all()
-        serializer = WorkoutSetSerializer(sets, many=True)
+        serializer = WorkoutSetGetSerializer(sets, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = WorkoutSetSerializer(data=request.DATA)
+        serializer = WorkoutSetBaseSerializer(data=request.DATA)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -21,7 +24,9 @@ class WorkoutSetListAPI(APIView):
 
 
 class WorkoutSetDetailAPI(APIView):
-
+    ''' Defines an APIView class to use for WorkoutSet object REST requests by id (single record).
+        See notes on WorkoutSetBaseSerializer vs WorkoutSetGetSerializer in serializers.py
+    '''
     def _get_object(self, pk):
         try:
             return WorkoutSet.objects.get(pk=pk)
@@ -30,12 +35,12 @@ class WorkoutSetDetailAPI(APIView):
 
     def get(self, request, pk, format=None):
         w_set = self._get_object(pk)
-        serializer = WorkoutSetSerializer(w_set)
+        serializer = WorkoutSetBaseSerializer(w_set)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
         w_set = self._get_object(pk)
-        serializer = WorkoutSetSerializer(w_set, data=request.DATA)
+        serializer = WorkoutSetBaseSerializer(w_set, data=request.DATA)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
