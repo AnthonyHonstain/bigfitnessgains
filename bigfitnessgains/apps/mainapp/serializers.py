@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 
 from bigfitnessgains.apps.mainapp.models import Exercise, MuscleGroup, Workout, WorkoutSet
 from rest_framework import serializers
+from measurement.measures.weight import Weight
 
 ## http://www.django-rest-framework.org/api-guide/serializers
 ## TODO: add transforms and validations where appropriate
@@ -38,12 +39,29 @@ class WorkoutSerializer(serializers.ModelSerializer):
         read_only_fields = ('created', 'modified')
 
 
-class WorkoutSetSerializer(serializers.ModelSerializer):
+class WorkoutSetBaseSerializer(serializers.ModelSerializer):
+
+    def transform_weight_value(self, obj, value):
+        ''' Override and convert the weight_value into whatever weight_unit it was stored as.
+            Unfortunately we don't have a user context to use preferences, but at least this makes
+            the tuple (weight_value, weight_unit) make sense
+        '''
+        if value: # chance this comes back to bite me: 140%
+            unit = obj.weight_unit
+            weight = Weight(g=value)
+            return getattr(weight, unit)
+        return None
 
     class Meta:
         model = WorkoutSet
-        fields = ('id', 'workout_fk', 'exercise_fk', 'reps', 'weight_lb', 'weight_kg')
+        fields = ('id', 'workout_fk', 'exercise_fk', 'reps', 'weight_value', 'weight_unit', 'weight_measure')
         read_only_fields = ('created', 'modified')
+
+
+class WorkoutSetGetSerializer(WorkoutSetBaseSerializer):
+
+    workout_fk = WorkoutSerializer()
+    exercise_fk = ExerciseSerializer()
 
 
 ## http://stackoverflow.com/questions/16857450/how-to-register-users-in-django-rest-framework

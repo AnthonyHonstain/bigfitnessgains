@@ -1,15 +1,17 @@
 import json
-from django.utils import timezone
 from django.test import TestCase
-from django.test.client import Client
+from django.test.client import Client, RequestFactory
 from django.contrib.auth import models as core_models
+
 from bigfitnessgains.apps.mainapp import models
+from bigfitnessgains.apps.mainapp.tests.test_utils import setup_database
+
 
 class TestExerciseAPI(TestCase):
 
     def setUp(self):
         self.client = Client()
-        _setup_database()
+        setup_database()
 
     def test_exercise_list_api(self):
         resp = self.client.get('/exercise/')
@@ -30,7 +32,7 @@ class TestWorkoutAPI(TestCase):
 
     def setUp(self):
         self.client = Client()
-        _setup_database()
+        setup_database()
 
     def test_workout_list_api(self):
         resp = self.client.get('/workouts/')
@@ -58,7 +60,8 @@ class TestWorkoutSetAPI(TestCase):
 
     def setUp(self):
         self.client = Client()
-        _setup_database()
+        self.factory = RequestFactory()
+        setup_database()
 
     def test_workout_set_list_api(self):
         resp = self.client.get('/workout_sets/')
@@ -77,67 +80,13 @@ class TestWorkoutSetAPI(TestCase):
         data = { 'workout_fk' : leg_workout.id,
                 'exercise_fk' : exercise.id,
                 'reps' : 10,
-                'weight_lb' : 100,
-                'weight_kg' : 45}
+                'weight_0': 100,
+                'weight_1': 'kg'
+                }
         ## next, test POSTS with only LB or only KG
         resp = self.client.post('/workout_sets/', data)
         self.assertEqual(resp.status_code, 200)
         json_body = json.loads(resp.content)
         ## assert we've returned a new id for the new record
         self.assertTrue(isinstance(json_body.get('id', None), int))
-
-def _setup_database():
-    ''' set up a few muscle groups, exercises, some workouts and some sets for a workout
-    '''
-    user = core_models.User.objects.create_user('atestuser', 'test@test.com', 'atestpassword')
-
-    _create_muscle_group("Arms")
-    _create_muscle_group("Legs")
-    _create_muscle_group("Brain")
-    muscle_group_fks = models.MuscleGroup.objects.all()
-
-    _create_exercise("Truck Pull", muscle_group_fks[:len(muscle_group_fks) - 1])
-    _create_exercise("Caber Toss", muscle_group_fks)
-
-    _create_workout(user, "Leg day", timezone.now())
-    _create_workout(user, "Also leg day", timezone.now())
-    _create_workout(user, "Erry day is leg day", timezone.now())
-
-    leg_exercise = models.Exercise.objects.get(exercise_name="Truck Pull")
-    leg_workout = models.Workout.objects.get(user_fk=user, workout_name="Erry day is leg day")
-    
-    _create_workout_set(leg_workout, leg_exercise, 12)
-    _create_workout_set(leg_workout, leg_exercise, 10)
-    _create_workout_set(leg_workout, leg_exercise, 8)
-
-
-def _create_exercise(name, muscle_group_fks):
-    new = models.Exercise.objects.create(exercise_name=name)
-    for fk in muscle_group_fks:
-        models.ExerciseToMuscleGroup.objects.create(exercise_fk=new,
-                                                    muscle_group_fk=fk,
-                                                    is_primary=False)
-
-
-def _create_muscle_group(name):
-    models.MuscleGroup.objects.create(muscle_group_name=name)
-
-
-def _create_workout(user, workout_name, workout_date=timezone.now()):
-    models.Workout.objects.create(user_fk=user,
-                                workout_name=workout_name,
-                                workout_date=workout_date)
-
-
-def _create_workout_set(workout_fk, exercise_fk, reps=5, weight_lb=100, weight_kg=45):
-    models.WorkoutSet.objects.create(workout_fk=workout_fk,
-                                    exercise_fk=exercise_fk,
-                                    reps=reps,
-                                    weight_lb=weight_lb,
-                                    weight_kg=weight_kg)
-
-
-
-
-
 

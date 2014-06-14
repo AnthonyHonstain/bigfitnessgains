@@ -202,6 +202,9 @@ THIRD_PARTY_APPS = (
     'userena',
     'guardian',
     'easy_thumbnails',
+
+    # abstraction of weight measurements
+    'measurement',
 )
 
 LOCAL_APPS = (
