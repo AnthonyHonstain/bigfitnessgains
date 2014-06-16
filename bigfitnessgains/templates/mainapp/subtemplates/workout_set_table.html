@@ -12,8 +12,7 @@ Required:
                 <th>#</th>
                 <th>Exercise</th>
                 <th>Reps</th>
-                <th>Weight (lbs)</th>
-                <th>Weight (kg)</th>
+                <th>Weight ({{ user_profile.weight_unit }})</th>
             </tr>
         </thead>
         <tbody>
@@ -22,8 +21,7 @@ Required:
                 <td>{{ forloop.counter }}</td>
                 <td>{{ workout_set.exercise_fk.exercise_name }}</td>
                 <td>{{ workout_set.reps }}</td>
-                <td>{{ workout_set.weight_lb }}</td>
-                <td>{{ workout_set.weight_kg }}</td>
+                <td>{{ workout_set.converted_weight }}</td>
             </tr>
         {% endfor %}
         </tbody>
