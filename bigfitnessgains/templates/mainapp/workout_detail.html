@@ -35,16 +35,6 @@ Track weightlifting results.
 
 {% block script %}
 <script>
-/*
- * Drag and drop functionality for table of workout results.
- */
-$(function() {
-    $( "#sortable  > *" ).sortable();
-    $( "#sortable  > *" ).disableSelection();
-});
-</script>
-
-<script>
 $(document).ready(function(){
     // -----------------------------------------------------------------------------
     // Spinner for ajax requests.
@@ -142,6 +132,16 @@ $(document).ready(function(){
             },
         });
     });
+
+    /*
+     * Drag and drop functionality for table of workout results.
+     */
+     $( "#sortable  > *" ).sortable({
+         connectWith: ".connectedSortable",
+         stop: function( event, ui ) {
+             alert('TODO STUB - Ajax update!');
+            }
+     }).disableSelection();
 });
 </script>
 

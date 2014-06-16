@@ -58,7 +58,7 @@ def workout_detail(request, pk):
     workout = get_object_or_404(Workout, pk=pk)
     if workout.user_fk != request.user:
         raise Http404
-    workout_sets = WorkoutSet.objects.filter(workout_fk=workout.id).select_related("exercise_fk").order_by("id")
+    workout_sets = WorkoutSet.objects.filter(workout_fk=workout.id).select_related("exercise_fk").order_by("order")
     if request.method == 'POST':
         form = WorkoutSetForm(request.POST)
         if form.is_valid():

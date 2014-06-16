@@ -1,6 +1,11 @@
+from bigfitnessgains.apps.mainapp.models import Workout
 from bigfitnessgains.apps.mainapp.models import WorkoutSet
-from bigfitnessgains.apps.mainapp.serializers import WorkoutSetBaseSerializer, WorkoutSetGetSerializer
+from bigfitnessgains.apps.mainapp.serializers import (WorkoutSetBaseSerializer,
+                                                      WorkoutSetGetSerializer,
+                                                      WorkoutSetOrderSerializer,
+                                                      )
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -21,6 +26,37 @@ class WorkoutSetListAPI(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+from rest_framework.generics import (ListAPIView,
+                                     RetrieveAPIView,
+                                     )
+
+
+class WorkoutSetOrder(ListAPIView):
+    '''
+    Special API to support drag and drop re-order of the workoutset items by the client.
+    '''
+
+    serializer_class = WorkoutSetOrderSerializer
+
+    def get_queryset(self):
+
+        workout_fk = self.kwargs[self.lookup_field]
+        # Just filter - throws DoesNotExist exception (rises up to endpoint (should be 404))
+        #workout = Workout.objects.get(pk=workout_fk, user_fk=self.request.user)
+
+        # Checks permissions but still raises error to top (should be 404)
+        #workout = Workout.objects.get(pk=workout_fk)
+        #self.check_object_permissions(self.request, workout)
+        #return WorkoutSet.objects.filter(workout_fk=workout_fk)
+
+        obj = get_object_or_404(Workout, pk=workout_fk)
+        self.check_object_permissions(self.request, obj)
+        queryset = WorkoutSet.objects.filter(workout_fk=obj)
+        # TODO - will I want to break this filtering logic out to a mixin
+        # that I can share? http://www.django-rest-framework.org/api-guide/generic-views
+        return queryset
 
 
 class WorkoutSetDetailAPI(APIView):

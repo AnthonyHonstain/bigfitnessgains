@@ -64,6 +64,16 @@ class WorkoutSetGetSerializer(WorkoutSetBaseSerializer):
     exercise_fk = ExerciseSerializer()
 
 
+class WorkoutSetOrderSerializer(serializers.ModelSerializer):
+
+    #workout_fk = WorkoutSerializer()
+
+    class Meta:
+        model = WorkoutSet
+        fields = ('id', 'workout_fk', 'exercise_fk', 'order')
+        read_only_fields = ('created', 'modified')
+
+
 ## http://stackoverflow.com/questions/16857450/how-to-register-users-in-django-rest-framework
 class UserSerializer(serializers.ModelSerializer):
 

@@ -1,7 +1,10 @@
 from django.conf.urls import patterns, url
 from bigfitnessgains.apps.mainapp.rest_api.exercise import ExerciseList, ExerciseDetail
 from bigfitnessgains.apps.mainapp.rest_api.workout import WorkoutListAPI, WorkoutDetailAPI
-from bigfitnessgains.apps.mainapp.rest_api.workoutset import WorkoutSetListAPI, WorkoutSetDetailAPI
+from bigfitnessgains.apps.mainapp.rest_api.workoutset import (WorkoutSetListAPI,
+                                                              WorkoutSetDetailAPI,
+                                                              WorkoutSetOrder,
+                                                              )
 
 import views
 
@@ -18,6 +21,11 @@ urlpatterns = patterns('',
 
     url(r'^workout_sets/$', WorkoutSetListAPI.as_view()),
     url(r'^workout_sets/(?P<pk>[0-9]+)/$', WorkoutSetDetailAPI.as_view()),
+
+	# This should probably move to workouts/ since the pk is for a workout
+	# and not a workout_set (we only care about workout_set records in the context
+    # of the workout they are associated with.
+    url(r'^workout_sets/(?P<pk>[0-9]+)/order/$', WorkoutSetOrder.as_view(), name='workoutset_order'),
 
     #url(r'^exercises/$', views.exercise_list, name='exercises'),
     #url(r'^muscle_groups/$', views.muscle_group_list, name='muscle_groups')

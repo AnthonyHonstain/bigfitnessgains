@@ -63,6 +63,7 @@ class WorkoutSet(TrackCreatedUpdatedModel):
     exercise_fk         = models.ForeignKey('Exercise')
     reps                = models.PositiveIntegerField(default=1)
     weight              = MeasurementField()
+    order               = models.IntegerField()
 
     def __str__(self):
         # TODO - notice extra query here
