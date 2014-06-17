@@ -133,15 +133,64 @@ $(document).ready(function(){
         });
     });
 
-    /*
-     * Drag and drop functionality for table of workout results.
-     */
-     $( "#sortable  > *" ).sortable({
-         connectWith: ".connectedSortable",
-         stop: function( event, ui ) {
-             alert('TODO STUB - Ajax update!');
+    // -----------------------------------------------------------------------------
+    // Drag and drop functionality for table of workout results.
+    // -----------------------------------------------------------------------------
+    function updateOrder(neworder) {
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                    // Send the token to same-origin, relative URLs only.
+                    // Send the token only if the method warrants CSRF protection
+                    // Using the CSRFToken value acquired earlier
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
             }
-     }).disableSelection();
+        });
+
+        $.ajax({
+            url: "{% url 'workoutset_order'  workout.id  %}",
+            contentType:"application/json; charset=utf-8",
+            dataType: "json",
+            // JSON.stringify needed for http://stackoverflow.com/questions/5570747/jquery-posting-json
+
+            data: JSON.stringify(neworder),
+            type: 'POST',
+
+            // http://stackoverflow.com/questions/2833951/how-to-catch-ajax-query-post-error
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log(errorThrown);
+            },
+            success: function(resultData) {
+                console.log(),
+                console.log("POST resultData " + resultData)
+            },
+        });
+    };
+
+    $( "#sortable  > *" ).sortable({
+        //
+        // We want to persist the ordering defined by the user.
+        //
+
+        // http://stackoverflow.com/questions/14532667/jquery-sortable-save-order-when-new-element-dragged-into-list
+        connectWith: ".connectedSortable",
+        //receive: function( event, ui ) { console.log('Receive!'); },
+        stop: function( event, ui ) {
+            // http://stackoverflow.com/questions/20196769/mvc4-persist-order-of-jquery-sortable-list-items-to-controller
+            neworder = new Array();
+            $('#sortable tbody tr').each(function () {
+                //get the id
+                var id = $(this).attr("id");
+                neworder.push(id);
+            });
+            console.log("AJAX", neworder);
+            updateOrder(neworder);
+
+        }
+    }).disableSelection();
+
 });
 </script>
 

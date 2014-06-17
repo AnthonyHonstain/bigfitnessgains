@@ -17,7 +17,7 @@ Required:
         </thead>
         <tbody>
         {% for workout_set in workout_sets %}
-            <tr>
+            <tr id="workoutset_{{ workout_set.id }}">
                 <td>{{ forloop.counter }}</td>
                 <td>{{ workout_set.exercise_fk.exercise_name }}</td>
                 <td>{{ workout_set.reps }}</td>

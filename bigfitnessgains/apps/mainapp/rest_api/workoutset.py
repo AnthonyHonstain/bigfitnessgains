@@ -43,13 +43,6 @@ class WorkoutSetOrder(ListAPIView):
     def get_queryset(self):
 
         workout_fk = self.kwargs[self.lookup_field]
-        # Just filter - throws DoesNotExist exception (rises up to endpoint (should be 404))
-        #workout = Workout.objects.get(pk=workout_fk, user_fk=self.request.user)
-
-        # Checks permissions but still raises error to top (should be 404)
-        #workout = Workout.objects.get(pk=workout_fk)
-        #self.check_object_permissions(self.request, workout)
-        #return WorkoutSet.objects.filter(workout_fk=workout_fk)
 
         obj = get_object_or_404(Workout, pk=workout_fk)
         self.check_object_permissions(self.request, obj)
