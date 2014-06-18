@@ -150,7 +150,8 @@ $(document).ready(function(){
         });
 
         $.ajax({
-            url: "{% url 'workoutset_order'  workout.id  %}",
+            // TODO - need to set the correct URL
+            url: "{% url 'workoutset_list'  workout.id  %}",
             contentType:"application/json; charset=utf-8",
             dataType: "json",
             // JSON.stringify needed for http://stackoverflow.com/questions/5570747/jquery-posting-json

@@ -19,9 +19,7 @@ class MuscleGroupSerializer(serializers.ModelSerializer):
         read_only_fields = ('created', 'modified')
 
 
-class ExerciseSerializer(serializers.ModelSerializer):
-
-    muscle_groups = MuscleGroupSerializer(many=True)
+class ExerciseBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exercise
@@ -29,6 +27,11 @@ class ExerciseSerializer(serializers.ModelSerializer):
         #(which is  a problem because we expect the model to set it).
         fields = ('id', 'exercise_name', 'muscle_groups')
         read_only_fields = ('created', 'modified')
+
+
+class ExerciseSerializer(ExerciseBaseSerializer):
+
+    muscle_groups = MuscleGroupSerializer(many=True)
 
 
 class WorkoutSerializer(serializers.ModelSerializer):
@@ -54,25 +57,21 @@ class WorkoutSetBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkoutSet
-        fields = ('id', 'workout_fk', 'exercise_fk', 'reps', 'weight_value', 'weight_unit', 'weight_measure')
+        fields = ('id',
+                  'workout_fk',
+                  'exercise_fk',
+                  'reps',
+                  'weight_value',
+                  'weight_unit',
+                  'weight_measure',
+                  'order')
         read_only_fields = ('created', 'modified')
 
 
 class WorkoutSetGetSerializer(WorkoutSetBaseSerializer):
 
     workout_fk = WorkoutSerializer()
-    exercise_fk = ExerciseSerializer()
-
-
-class WorkoutSetOrderSerializer(serializers.ModelSerializer):
-
-    #workout_fk = WorkoutSerializer()
-
-    class Meta:
-        model = WorkoutSet
-        fields = ('id', 'workout_fk', 'exercise_fk', 'order')
-        read_only_fields = ('created', 'modified')
-
+    exercise_fk = ExerciseBaseSerializer()
 
 ## http://stackoverflow.com/questions/16857450/how-to-register-users-in-django-rest-framework
 class UserSerializer(serializers.ModelSerializer):

@@ -2,7 +2,6 @@ from bigfitnessgains.apps.mainapp.models import Workout
 from bigfitnessgains.apps.mainapp.models import WorkoutSet
 from bigfitnessgains.apps.mainapp.serializers import (WorkoutSetBaseSerializer,
                                                       WorkoutSetGetSerializer,
-                                                      WorkoutSetOrderSerializer,
                                                       )
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -26,30 +25,6 @@ class WorkoutSetListAPI(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-from rest_framework.generics import (ListAPIView,
-                                     RetrieveAPIView,
-                                     )
-
-
-class WorkoutSetOrder(ListAPIView):
-    '''
-    Special API to support drag and drop re-order of the workoutset items by the client.
-    '''
-
-    serializer_class = WorkoutSetOrderSerializer
-
-    def get_queryset(self):
-
-        workout_fk = self.kwargs[self.lookup_field]
-
-        obj = get_object_or_404(Workout, pk=workout_fk)
-        self.check_object_permissions(self.request, obj)
-        queryset = WorkoutSet.objects.filter(workout_fk=obj)
-        # TODO - will I want to break this filtering logic out to a mixin
-        # that I can share? http://www.django-rest-framework.org/api-guide/generic-views
-        return queryset
 
 
 class WorkoutSetDetailAPI(APIView):
@@ -79,3 +54,81 @@ class WorkoutSetDetailAPI(APIView):
         w_set = self._get_object(pk)
         w_set.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class WorkoutSetBase(APIView):
+
+    def _check_workout_permissions(self, workout_fk):
+        '''
+        Splitting this out for extra clarity
+        '''
+        # Get the Workout object requested, if it exists
+        obj = get_object_or_404(Workout, pk=workout_fk)
+        # Check permissions on it (workoutset doesn't track user).
+
+        if obj.user_fk != self.request.user:
+            self.permission_denied(self.request)
+
+    def _get_workoutset(self, workout_fk):
+        self._check_workout_permissions(workout_fk)
+
+        workoutset = WorkoutSet.objects.filter(workout_fk=workout_fk).select_related('workout_fk', 'exercise_fk')
+        # TODO - can I clean up the permission checks?
+        #print 'foo', workoutset
+        return workoutset
+
+
+class WorkoutSetOrder(WorkoutSetBase):
+    '''
+    Special API to support drag and drop re-order of the workoutset items by the client.
+    '''
+
+    def get(self, request, workout_fk, format=None):
+        sets = self._get_workoutset(workout_fk)
+        serializer = WorkoutSetGetSerializer(sets, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = WorkoutSetBaseSerializer(data=request.DATA)
+        if serializer.is_valid():
+            self._check_workout_permissions(serializer.workout_fk)
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class WorkoutSetOrderUpdate(WorkoutSetBase):
+
+#     def _get_object(self, pk):
+#         try:
+#             return WorkoutSet.objects.get(pk=pk)
+#         except WorkoutSet.DoesNotExist:
+#             return Http404
+
+    def get(self, request, workout_fk, pk, format=None):
+        workoutset = WorkoutSet.objects.select_related('workout_fk', 'exercise_fk').get(pk=pk)
+        if workoutset.workout_fk.user_fk != self.request.user:
+            self.permission_denied(self.request)
+
+        serializer = WorkoutSetGetSerializer(workoutset)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        workoutset = WorkoutSet.objects.select_related('workout_fk').get(pk=pk)
+        if workoutset.workout_fk.user_fk != self.request.user:
+            self.permission_denied(self.request)
+
+        serializer = WorkoutSetBaseSerializer(workoutset, data=request.DATA)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        workoutset = WorkoutSet.objects.select_related('workout_fk').get(pk=pk)
+        if workoutset.workout_fk.user_fk != self.request.user:
+            self.permission_denied(self.request)
+
+        workoutset.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
