@@ -133,10 +133,8 @@ $(document).ready(function(){
         });
     });
 
-    // -----------------------------------------------------------------------------
-    // Drag and drop functionality for table of workout results.
-    // -----------------------------------------------------------------------------
-    function updateOrder(neworder) {
+    // UPDATE WorkoutSet
+    function updateWorkoutSet(workout_fk, order, exercise_fk, reps, weight, weight_unit, workoutset_id) {
 
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
@@ -150,46 +148,131 @@ $(document).ready(function(){
         });
 
         $.ajax({
-            // TODO - need to set the correct URL
-            url: "{% url 'workoutset_list'  workout.id  %}",
+            url: "{% url 'workoutset_list'  workout.id  %}" + workoutset_id + "/",
             contentType:"application/json; charset=utf-8",
             dataType: "json",
             // JSON.stringify needed for http://stackoverflow.com/questions/5570747/jquery-posting-json
-
-            data: JSON.stringify(neworder),
-            type: 'POST',
+            data: JSON.stringify({
+                "workoutset_id": workoutset_id,
+                "exercise_fk": exercise_fk,
+                "reps": reps,
+                "order": order,
+                "weight_0": weight,
+                "weight_1": weight_unit,
+                    }),
+            type: 'PUT',
 
             // http://stackoverflow.com/questions/2833951/how-to-catch-ajax-query-post-error
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 console.log(errorThrown);
-            },
-            success: function(resultData) {
-                console.log(),
-                console.log("POST resultData " + resultData)
+                alert(errorThrown);
             },
         });
-    };
+    }
 
-    $( "#sortable  > *" ).sortable({
+    // -----------------------------------------------------------------------------
+    // Drag and drop functionality for table of workout results.
+    // -----------------------------------------------------------------------------
+    $( "#sortableTable  > *" ).sortable({
         //
         // We want to persist the ordering defined by the user.
         //
 
-        // http://stackoverflow.com/questions/14532667/jquery-sortable-save-order-when-new-element-dragged-into-list
-        connectWith: ".connectedSortable",
-        //receive: function( event, ui ) { console.log('Receive!'); },
-        stop: function( event, ui ) {
-            // http://stackoverflow.com/questions/20196769/mvc4-persist-order-of-jquery-sortable-list-items-to-controller
-            neworder = new Array();
-            $('#sortable tbody tr').each(function () {
-                //get the id
-                var id = $(this).attr("id");
-                neworder.push(id);
-            });
-            console.log("AJAX", neworder);
-            updateOrder(neworder);
+        //
+        // All credit for this sorting behavior goes to - http://jsfiddle.net/m2web/y53Lg/
+        //
+        start: function (event, ui) {
+            //Let's set the starting position of an row in the table to ensure the correct row index
+            var start_pos = ui.item.index() + 1;
+            ui.item.data('start_pos', start_pos);
+        },
 
+        change: function (event, ui) {
+            //When the item postion is changed while dragging a item, get it's position
+            var start_pos = ui.item.data('start_pos');
+
+            //get the direction of the drag motion
+            var dragDirection = start_pos < ui.placeholder.index() ? "down" : "up";
+            ui.item.data('drag_direction', dragDirection);
+        },
+
+        stop: function (event, ui) {
+            //get the table where the sorting is happening
+            var thisTable = document.getElementById('sortableTable');
+
+            //get the row index of where the dragged row has stopped
+            var movedRowIndex = (ui.item.index() + 1);
+
+            //get the page # cell and update the text to the stopped location
+            var pageNumberCell = $(thisTable.rows[movedRowIndex].cells[0]);
+            pageNumberCell.text((ui.item.index() + 1));
+
+            //get the direction 'up' or 'down' that the record was dragged.
+            var drag_direction = ui.item.data('drag_direction');
+
+            // TODO - Remove, just dumping to console for printline debugging
+            console.log(
+                    {{ workout.id }},
+                    $(thisTable.rows[movedRowIndex].cells[0]).text(),
+                    $(thisTable.rows[movedRowIndex].cells[2]).text(),
+                    $(thisTable.rows[movedRowIndex].cells[3]).text(),
+                    $(thisTable.rows[movedRowIndex].cells[4]).text(),
+                    $(thisTable.rows[movedRowIndex].cells[5]).text(),
+                    $(thisTable.rows[movedRowIndex].cells[6]).text());
+
+            updateWorkoutSet(
+                    {{ workout.id }}, // TODO - fix hack for workout id
+                    $(thisTable.rows[movedRowIndex].cells[0]).text(),
+                    $(thisTable.rows[movedRowIndex].cells[2]).text(),
+                    $(thisTable.rows[movedRowIndex].cells[3]).text(),
+                    $(thisTable.rows[movedRowIndex].cells[4]).text(),
+                    $(thisTable.rows[movedRowIndex].cells[5]).text(),
+                    $(thisTable.rows[movedRowIndex].cells[6]).text()
+                    )
+
+            // TODO - update each item we dragged.
+
+            //if the record was drageed down the table, update record page#s above
+            if (drag_direction == 'down') {
+                for (var i = 1; i < thisTable.rows.length; i++) {
+                    if (i < movedRowIndex) {
+                        $(thisTable.rows[i].cells[0]).text(i);
+                        // TODO - FIX THIS JUNK
+                        updateWorkoutSet(
+                                {{ workout.id }},
+                                $(thisTable.rows[i].cells[0]).text(),
+                                $(thisTable.rows[i].cells[2]).text(),
+                                $(thisTable.rows[i].cells[3]).text(),
+                                $(thisTable.rows[i].cells[4]).text(),
+                                $(thisTable.rows[i].cells[5]).text(),
+                                $(thisTable.rows[i].cells[6]).text()
+                                )
+                    }
+                }
+            }
+
+            //if the record was drageed up the table, update record page#s below
+            if (drag_direction == 'up') {
+                for (var i = 1; i < thisTable.rows.length; i++) {
+                    if (i > movedRowIndex) {
+                        $(thisTable.rows[i].cells[0]).text(i);
+                        // TODO - FIX THIS JUNK
+                        updateWorkoutSet(
+                                {{ workout.id }},
+                                $(thisTable.rows[i].cells[0]).text(),
+                                $(thisTable.rows[i].cells[2]).text(),
+                                $(thisTable.rows[i].cells[3]).text(),
+                                $(thisTable.rows[i].cells[4]).text(),
+                                $(thisTable.rows[i].cells[5]).text(),
+                                $(thisTable.rows[i].cells[6]).text()
+                                )
+                    }
+                }
+            }
         }
+
+
+
     }).disableSelection();
 
 });

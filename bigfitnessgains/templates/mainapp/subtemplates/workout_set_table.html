@@ -6,22 +6,27 @@ Required:
 --> {% endcomment %}
 
 <div class="table-responsive">
-    <table id="sortable" class="table table-condensed">
+    <table id="sortableTable" class="table table-condensed">
         <thead>
             <tr>
                 <th>#</th>
                 <th>Exercise</th>
                 <th>Reps</th>
                 <th>Weight ({{ user_profile.weight_unit }})</th>
+                <th class="hidden">weight_unit</th>
+                <th class="hidden">workoutset_id</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="sortThis">
         {% for workout_set in workout_sets %}
             <tr id="workoutset_{{ workout_set.id }}">
-                <td>{{ forloop.counter }}</td>
+                <td>{{ workout_set.order }}</td>
                 <td>{{ workout_set.exercise_fk.exercise_name }}</td>
+                <td class="hidden">{{ workout_set.exercise_fk.id }}</td>
                 <td>{{ workout_set.reps }}</td>
                 <td>{{ workout_set.converted_weight }}</td>
+                <td class="hidden">{{ workout_set.weight_unit }}</td>
+                <td class="hidden">{{ workout_set.id }}</td>
             </tr>
         {% endfor %}
         </tbody>
