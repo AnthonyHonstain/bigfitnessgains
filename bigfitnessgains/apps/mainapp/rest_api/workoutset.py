@@ -98,10 +98,19 @@ class WorkoutSetOrder(WorkoutSetBase):
         Create a new WorkoutSet for a given Workout.
         '''
         serializer = WorkoutSetBaseSerializer(data=request.DATA)
+
+        print
+        print "POST"
+        print request.DATA
+
         if serializer.is_valid():
             self._check_workout_permissions(workout_fk)
             serializer.save()
-            return Response(serializer.data)
+            # We want to return the WorkoutSet WITH Exercise info
+            workoutset = WorkoutSet.objects.select_related('workout_fk', 'exercise_fk').get(pk=serializer.data['id'])
+            extended_serializer = WorkoutSetGetSerializer(workoutset)
+
+            return Response(extended_serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

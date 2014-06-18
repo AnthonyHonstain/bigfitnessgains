@@ -101,6 +101,40 @@ class TestWorkoutSetAPI(TestCase):
         # Use the POST endpoint to create a few WorkoutSets
         data = {'workout_fk': workout.id,
                 'exercise_fk': self.exercise_caber.id,
+                'reps': 5,
+                'order': 5,
+                'weight_value': 100,
+                'weight_unit': 'kg'
+                }
+        resp = self.client.post('/workouts/{0}/workoutsets/'.format(workout.id), data)
+        self.assertEqual(resp.status_code, 200)
+        set_one = json.loads(resp.content)
+
+        # Sanity check the data in the database.
+        workoutset_all = models.WorkoutSet.objects.all()
+        self.assertEqual(len(workoutset_all), 1)
+        test_workoutset = workoutset_all[0]
+
+        self.assertEqual(test_workoutset.workout_fk.id, workout.id)
+        self.assertEqual(test_workoutset.exercise_fk.id, self.exercise_caber.id)
+        self.assertEqual(test_workoutset.reps, 5)
+        self.assertEqual(test_workoutset.order, 5)
+        self.assertEqual(test_workoutset.weight_value, 100000)
+        self.assertEqual(test_workoutset.weight_unit, 'Weight(g)')
+        self.assertEqual(test_workoutset.weight_measure, 'kg')
+
+    def test_workout_set_post_multiple(self):
+        '''Test WorkoutSet POST for a given workout (with and without WorkoutSets)'''
+        self.client.login(username='atestuser', password='atestpassword')
+
+        # Manually create a new workout.
+        workout = models.Workout.objects.create(user_fk=self.user,
+                                                workout_name="Test workout",
+                                                workout_date=datetime.utcnow().replace(tzinfo=utc))
+
+        # Use the POST endpoint to create a few WorkoutSets
+        data = {'workout_fk': workout.id,
+                'exercise_fk': self.exercise_caber.id,
                 'reps': 1,
                 'order': 1,
                 'weight_0': 1,

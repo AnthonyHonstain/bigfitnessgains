@@ -101,8 +101,11 @@ $(document).ready(function(){
             }
         });
 
+        var thisTable = document.getElementById('sortableTable');
+        var new_order = thisTable.rows.length;
+
         $.ajax({
-            url: "http://127.0.0.1:8000/workout_sets/",
+            url: "{% url 'workoutset_list'  workout.id  %}",
             contentType:"application/json; charset=utf-8",
             dataType: "json",
             // JSON.stringify needed for http://stackoverflow.com/questions/5570747/jquery-posting-json
@@ -110,8 +113,9 @@ $(document).ready(function(){
                 "workout_fk": $("#id_workout_fk").val(),
                 "exercise_fk": $("#id_exercise_fk").val(),
                 "reps": $("#id_reps").val(),
-                "weight_lb": $("#id_weight_lb").val(),
-                "weight_kg": $("#id_weight_kg").val(),
+                "order": new_order,
+                "weight_0": $("#id_weight_0").val(),
+                "weight_1": $("#id_weight_1").val(),
                     }),
             type: 'POST',
 
@@ -121,13 +125,15 @@ $(document).ready(function(){
                 alert(errorThrown);
             },
             success: function(resultData) {
-                console.log("POST resultData " + resultData),
-                $("table tbody").append("<tr>"+
-                        "<td>" + "AJAX" + "</td>"+
-                        "<td>" + resultData.exercise_fk + "</td>"+
+                console.log("POST resultData ", resultData),
+                $("table tbody").append("<tr id=\"workoutset_" + resultData.id + "\">"+
+                        "<td>" + resultData.order + "</td>"+
+                        "<td>" + resultData.exercise_fk.name + "</td>"+
+                        "<td class=\"hidden\">" + resultData.exercise_fk.id + "</td>"+
                         "<td>" + resultData.reps + "</td>"+
-                        "<td>" + resultData.weight_lb + "</td>"+
-                        "<td>" + resultData.weight_kg + "</td>"+
+                        "<td>" + resultData.converted_weight + "</td>"+
+                        "<td class=\"hidden\">" + resultData.weight_unit + "</td>"+
+                        "<td class=\"hidden\">" + resultData.id + "</td>"+
                         "</tr>");
             },
         });
