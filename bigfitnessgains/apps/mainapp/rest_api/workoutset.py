@@ -88,10 +88,10 @@ class WorkoutSetOrder(WorkoutSetBase):
         serializer = WorkoutSetGetSerializer(sets, many=True)
         return Response(serializer.data)
 
-    def post(self, request, format=None):
+    def post(self, request, workout_fk, format=None):
         serializer = WorkoutSetBaseSerializer(data=request.DATA)
         if serializer.is_valid():
-            self._check_workout_permissions(serializer.workout_fk)
+            self._check_workout_permissions(workout_fk)
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
