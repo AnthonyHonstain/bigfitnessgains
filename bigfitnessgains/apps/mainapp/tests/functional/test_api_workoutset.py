@@ -98,11 +98,9 @@ class TestWorkoutSetAPI(TestCase):
                                                 workout_name="Test workout",
                                                 workout_date=datetime.utcnow().replace(tzinfo=utc))
 
-        exercise = models.Exercise.objects.get(exercise_name='Caber Toss')
-
         # Use the POST endpoint to create a few WorkoutSets
         data = {'workout_fk': workout.id,
-                'exercise_fk': exercise.id,
+                'exercise_fk': self.exercise_caber.id,
                 'reps': 1,
                 'order': 1,
                 'weight_0': 1,
@@ -113,7 +111,7 @@ class TestWorkoutSetAPI(TestCase):
         set_one = json.loads(resp.content)
 
         data = {'workout_fk': workout.id,
-                'exercise_fk': exercise.id,
+                'exercise_fk': self.exercise_caber.id,
                 'reps': 2,
                 'order': 2,
                 'weight_0': 2,
@@ -127,7 +125,7 @@ class TestWorkoutSetAPI(TestCase):
         workoutset_all = models.WorkoutSet.objects.all()
         for test_workoutset in workoutset_all:
             self.assertEqual(test_workoutset.workout_fk.id, workout.id)
-            self.assertEqual(test_workoutset.exercise_fk.id, exercise.id)
+            self.assertEqual(test_workoutset.exercise_fk.id, self.exercise_caber.id)
         self.assertEqual(set_one['reps'], workoutset_all[0].reps)
         self.assertEqual(set_two['reps'], workoutset_all[1].reps)
 
@@ -138,13 +136,11 @@ class TestWorkoutSetAPI(TestCase):
                                                 workout_name="Test workout",
                                                 workout_date=datetime.utcnow().replace(tzinfo=utc))
 
-        exercise = models.Exercise.objects.get(exercise_name='Caber Toss')
-
         # Verify that user two can't access the workout
         self.client.login(username='atestuser2', password='atestpassword2')
 
         data = {'workout_fk': workout.id,
-                'exercise_fk': exercise.id,
+                'exercise_fk': self.exercise_caber.id,
                 'reps': 1,
                 'order': 1,
                 'weight_0': 1,
@@ -180,3 +176,114 @@ class TestWorkoutSetAPI(TestCase):
                          rand_workout)
         self.assertEqual(json_body['reps'], rand_int)
         self.assertEqual(json_body['order'], rand_int)
+
+    def test_workout_set_put_delete(self):
+        '''Test WorkoutSet PUT for a given workout'''
+        self.client.login(username='atestuser', password='atestpassword')
+
+        rand_int = random.randint(0, 100)
+        rand_workout = 'Test_workout_' + str(rand_int)
+        workout = models.Workout.objects.create(user_fk=self.user,
+                                                workout_name=rand_workout,
+                                                workout_date=datetime.utcnow().replace(tzinfo=utc))
+
+        workout_2 = models.Workout.objects.create(user_fk=self.user,
+                                                  workout_name='Secondary Workout',
+                                                  workout_date=datetime.utcnow().replace(tzinfo=utc))
+
+        # Add a single WorkoutSet
+        workoutset = models.WorkoutSet.objects.create(workout_fk=workout,
+                                                      exercise_fk=self.exercise_caber,
+                                                      reps=rand_int,
+                                                      order=rand_int,
+                                                      weight_value=100,
+                                                      weight_unit='lb',
+                                                      weight_measure='Weight(g)')
+
+        # Validate that we can't change the workout the workoutset it attached to.
+        data = {'id': workoutset.id,
+                'workout_fk': workout_2.id,
+                'exercise_fk': self.exercise_caber.id,
+                'reps': rand_int + 1,
+                'order': rand_int + 1,
+                'weight_0': 100,
+                'weight_1': 'lb'
+                }
+        resp = self.client.put('/workouts/{0}/workoutsets/{1}/'
+                                ''.format(workout.id, workoutset.id), data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(models.WorkoutSet.objects.get(pk=workoutset.id).workout_fk.id,
+                         workout.id)
+
+        # Use the PUT to update the workoutset
+        data = {'id': workoutset.id,
+                'workout_fk': workout.id,
+                'exercise_fk': self.exercise_caber.id,
+                'reps': rand_int + 1,
+                'order': rand_int + 1,
+                'weight_0': 100,
+                'weight_1': 'lb'
+                }
+        resp = self.client.put('/workouts/{0}/workoutsets/{1}/'
+                                ''.format(workout.id, workoutset.id), data)
+        self.assertEqual(resp.status_code, 200)
+        #set_one = json.loads(resp.content)
+
+        # Sanity check the data in the database.
+        workoutset_all = models.WorkoutSet.objects.all()
+        self.assertEqual(len(workoutset_all), 1)
+
+        self.assertEqual(workoutset_all[0].id, workoutset.id)
+        self.assertEqual(workoutset_all[0].workout_fk.id, workout.id)
+        self.assertEqual(workoutset_all[0].exercise_fk.id, self.exercise_caber.id)
+        self.assertEqual(workoutset_all[0].reps, rand_int + 1)
+        self.assertEqual(workoutset_all[0].order, rand_int + 1)
+
+        # Delete the record we updated
+        resp = self.client.delete('/workouts/{0}/workoutsets/{1}/'
+                                  ''.format(workout.id, workoutset.id))
+        self.assertEqual(resp.status_code, 204)
+
+        # Sanity check the data in the database.
+        workoutset_all = models.WorkoutSet.objects.all()
+        self.assertEqual(len(workoutset_all), 0)
+
+    def test_workout_set_put_delete_perm(self):
+        '''Test WorkoutSet GET, PUT, DELETE permissions'''
+
+        workout = models.Workout.objects.create(user_fk=self.user,
+                                                workout_name='Test Workout Permissions',
+                                                workout_date=datetime.utcnow().replace(tzinfo=utc))
+
+        workoutset = models.WorkoutSet.objects.create(workout_fk=workout,
+                                                      exercise_fk=self.exercise_caber,
+                                                      reps=1,
+                                                      order=1,
+                                                      weight_value=100,
+                                                      weight_unit='lb',
+                                                      weight_measure='Weight(g)')
+
+        # Access the REST endpoints as a different user (than created the workout)
+        self.client.login(username='atestuser2', password='atestpassword2')
+
+        # Validate we can't GET someone else's workoutset
+        resp = self.client.get('/workouts/{0}/workoutsets/{1}/'.format(workout.id, workoutset.id))
+        self.assertEqual(resp.status_code, 403)
+
+        # Validate we can't PUT / update someone else's workoutset
+        data = {'id': workoutset.id,
+                'workout_fk': workout.id,
+                'exercise_fk': self.exercise_caber.id,
+                'reps': 2,
+                'order': 2,
+                'weight_0': 100,
+                'weight_1': 'lb'
+                }
+        resp = self.client.put('/workouts/{0}/workoutsets/{1}/'
+                                ''.format(workout.id, workoutset.id), data)
+        self.assertEqual(resp.status_code, 403)
+
+        # Validate we can't DELETE someone else's workoutset
+        resp = self.client.delete('/workouts/{0}/workoutsets/{1}/'
+                                  ''.format(workout.id, workoutset.id))
+        self.assertEqual(resp.status_code, 403)

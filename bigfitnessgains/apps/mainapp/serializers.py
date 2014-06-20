@@ -65,13 +65,38 @@ class WorkoutSetBaseSerializer(serializers.ModelSerializer):
                   'weight_unit',
                   'weight_measure',
                   'order')
-        read_only_fields = ('created', 'modified')
+
+        read_only_fields = ('created',
+                            'modified')
 
 
 class WorkoutSetGetSerializer(WorkoutSetBaseSerializer):
 
     workout_fk = WorkoutSerializer()
     exercise_fk = ExerciseBaseSerializer()
+
+
+class WorkoutSetPutSerializer(WorkoutSetBaseSerializer):
+    '''
+    WorkoutSet serializer for PUT functionality, we don't ALLOW
+    modification of the workout_fk after a WorkoutSet has been created.
+    '''
+
+    class Meta:
+        model = WorkoutSet
+        fields = ('id',
+                  #'workout_fk',
+                  'exercise_fk',
+                  'reps',
+                  'weight_value',
+                  'weight_unit',
+                  'weight_measure',
+                  'order')
+
+        read_only_fields = ('workout_fk',
+                            'created',
+                            'modified')
+
 
 ## http://stackoverflow.com/questions/16857450/how-to-register-users-in-django-rest-framework
 class UserSerializer(serializers.ModelSerializer):
