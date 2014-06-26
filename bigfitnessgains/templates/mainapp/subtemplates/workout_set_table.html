@@ -11,9 +11,10 @@ Required:
             <tr>
                 <th>#</th>
                 <th>Exercise</th>
+                <th class="hidden">exercise_fk</th>
                 <th>Reps</th>
-                <th>Weight ({{ user_profile.weight_unit }})</th>
-                <th class="hidden">weight_unit</th>
+                <th>Weight</th>
+                <th>Unit</th>
                 <th class="hidden">workoutset_id</th>
             </tr>
         </thead>
@@ -24,8 +25,8 @@ Required:
                 <td>{{ workout_set.exercise_fk.exercise_name }}</td>
                 <td class="hidden">{{ workout_set.exercise_fk.id }}</td>
                 <td>{{ workout_set.reps }}</td>
-                <td>{{ workout_set.converted_weight }}</td>
-                <td class="hidden">{{ workout_set.weight_unit }}</td>
+                <td>{{ workout_set.user_weight_value }}</td>
+                <td>{{ workout_set.weight_unit }}</td>
                 <td class="hidden">{{ workout_set.id }}</td>
             </tr>
         {% endfor %}

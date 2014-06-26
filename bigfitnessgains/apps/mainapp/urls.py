@@ -1,13 +1,10 @@
 from django.conf.urls import patterns, url
 from bigfitnessgains.apps.mainapp.rest_api.exercise import ExerciseList, ExerciseDetail
 from bigfitnessgains.apps.mainapp.rest_api.workout import WorkoutListAPI, WorkoutDetailAPI
-from bigfitnessgains.apps.mainapp.rest_api.workoutset import (WorkoutSetListAPI,
-                                                              WorkoutSetDetailAPI,
-                                                              WorkoutSetOrder,
-                                                              WorkoutSetOrderUpdate,
-                                                              )
+from bigfitnessgains.apps.mainapp.rest_api.workoutset import WorkoutSetList, WorkoutSetDetail
 
 import views
+
 
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
@@ -20,18 +17,14 @@ urlpatterns = patterns('',
     url(r'^workouts/$', WorkoutListAPI.as_view()),
     url(r'^workouts/(?P<pk>[0-9]+)/$', WorkoutDetailAPI.as_view()),
 
-    # Crafting some special REST endpoint for working with the workoutsets
-    # via AJAX.
     url(r'^workouts/(?P<workout_fk>[0-9]+)/workoutsets/$',
-        WorkoutSetOrder.as_view(),
+        WorkoutSetList.as_view(),
         name='workoutset_list'),
     url(r'^workouts/(?P<workout_fk>[0-9]+)/workoutsets/(?P<pk>[0-9]+)/$',
-        WorkoutSetOrderUpdate.as_view(),
+        WorkoutSetDetail.as_view(),
         name='workoutset_detail'),
 
-    url(r'^workout_sets/$', WorkoutSetListAPI.as_view()),
-    url(r'^workout_sets/(?P<pk>[0-9]+)/$', WorkoutSetDetailAPI.as_view()),
-
+    # TODO - expose after we work through permission scenarios.
     #url(r'^exercises/$', views.exercise_list, name='exercises'),
     #url(r'^muscle_groups/$', views.muscle_group_list, name='muscle_groups')
 )

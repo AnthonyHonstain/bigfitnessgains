@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+import django_measurement.utils
 
 from bigfitnessgains.apps.mainapp.models import Exercise, MuscleGroup, Workout, WorkoutSet
 from rest_framework import serializers
@@ -43,17 +44,40 @@ class WorkoutSerializer(serializers.ModelSerializer):
 
 
 class WorkoutSetBaseSerializer(serializers.ModelSerializer):
+    '''
+    WARNING - non-obvious logic in place to deal with serializing
+    the Weight measurement field on the WorkoutSet model.
+    '''
 
-    def transform_weight_value(self, obj, value):
-        ''' Override and convert the weight_value into whatever weight_unit it was stored as.
-            Unfortunately we don't have a user context to use preferences, but at least this makes
-            the tuple (weight_value, weight_unit) make sense
-        '''
-        if value: # chance this comes back to bite me: 140%
-            unit = obj.weight_unit
-            weight = Weight(g=value)
-            return getattr(weight, unit)
-        return None
+    # Sourcing the 'user_weight_value' from a helper method
+    # on the WorkoutSet model.
+    user_weight_value = serializers.FloatField(source='weight_value')
+    # NOTICE - there is a field for user_weight_value AND weight_value,
+    # BUT we only want users supplying a user_weight_value.
+    weight_value = serializers.FloatField(required=False)
+    weight_unit = serializers.CharField()
+    weight_measure = serializers.CharField(default='Weight(g)')
+
+    def to_native(self, obj):
+        ret = super(serializers.ModelSerializer, self).to_native(obj)
+
+        # Using the weight unit from the WorkoutSet
+        unit = obj.weight_unit
+        # Assuming the value is in grams
+        weight = Weight(g=obj.weight_value)
+        ret['user_weight_value'] = getattr(weight, unit)
+        return ret
+
+    def from_native(self, data, files):
+        standard_weight_unit = Weight.STANDARD_UNIT
+        # Construct a Weight instance from the user data.
+        converted_value = django_measurement.utils.get_measurement(Weight,
+                                                                   data['user_weight_value'],
+                                                                   data['weight_unit'])
+        # We want the weight_value in grams
+        data['weight_value'] = getattr(converted_value, standard_weight_unit)
+        ret = super(serializers.ModelSerializer, self).from_native(data, files)
+        return ret
 
     class Meta:
         model = WorkoutSet

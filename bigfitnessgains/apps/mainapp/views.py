@@ -84,7 +84,8 @@ def workout_detail(request, pk):
     user_profile = request.user.user_profile
 
     for w_set in workout_sets:
-        setattr(w_set, 'converted_weight', getattr(w_set.weight, user_profile.weight_unit))
+        # Generate the weight we will display to the user.
+        setattr(w_set, 'user_weight_value', getattr(w_set.weight, w_set.weight_unit))
 
     return render(request, 'mainapp/workout_detail.html', {
         'form': form,

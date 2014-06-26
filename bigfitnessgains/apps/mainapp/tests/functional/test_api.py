@@ -54,39 +54,3 @@ class TestWorkoutAPI(TestCase):
         json_body = json.loads(resp.content)
         ## assert we've returned a new id for the new record
         self.assertTrue(isinstance(json_body.get('id', None), int))
-
-
-class TestWorkoutSetAPI(TestCase):
-
-    def setUp(self):
-        self.client = Client()
-        self.factory = RequestFactory()
-        setup_database()
-
-    def test_workout_set_list_api(self):
-        resp = self.client.get('/workout_sets/')
-        self.assertEqual(resp.status_code, 200)
-
-    def test_workout_set_detail_api(self):
-        sets = models.WorkoutSet.objects.all()
-        set_pk = sets[0].id
-        resp = self.client.get('/workout_sets/{0}/'.format(set_pk))
-        self.assertEqual(resp.status_code, 200)
-
-    def test_workout_set_post_api(self):
-        user = core_models.User.objects.get(username='atestuser')
-        leg_workout = models.Workout.objects.get(user_fk=user, workout_name="Erry day is leg day")
-        exercise = models.Exercise.objects.get(exercise_name='Caber Toss')
-        data = { 'workout_fk' : leg_workout.id,
-                'exercise_fk' : exercise.id,
-                'reps' : 10,
-                'order' : 1,
-                'weight_0': 100,
-                'weight_1': 'kg'
-                }
-        ## next, test POSTS with only LB or only KG
-        resp = self.client.post('/workout_sets/', data)
-        self.assertEqual(resp.status_code, 200)
-        json_body = json.loads(resp.content)
-        ## assert we've returned a new id for the new record
-        self.assertTrue(isinstance(json_body.get('id', None), int))

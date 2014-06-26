@@ -103,14 +103,31 @@ class TestWorkoutSetAPI(TestCase):
                 'exercise_fk': self.exercise_caber.id,
                 'reps': 5,
                 'order': 5,
-                'weight_value': 100,
-                'weight_unit': 'kg'
+                'user_weight_value': 100,
+                'weight_unit': 'kg',
                 }
         resp = self.client.post('/workouts/{0}/workoutsets/'.format(workout.id), data)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, resp.content)
         set_one = json.loads(resp.content)
 
-        # Sanity check the data in the database.
+        # -------------------------------------------
+        # Verify the serializer
+        # -------------------------------------------
+        # NOTE - we expect the workout_fk and exercise_fk to contain their
+        # respective models (and not just be a foreign key id).
+        self.assertEqual(set_one['workout_fk']['id'], workout.id)
+        self.assertEqual(set_one['exercise_fk']['id'], self.exercise_caber.id)
+
+        # Warning - watch out for the special logic on weight_* fields
+        self.assertEqual(set_one['weight_value'], 100000)
+        self.assertEqual(set_one['user_weight_value'], 100)
+        self.assertEqual(set_one['weight_unit'], 'kg')
+        self.assertEqual(set_one['weight_measure'], 'Weight(g)')
+        self.assertEqual(set_one['order'], 5)
+
+        # -------------------------------------------
+        # Verify the data in the database
+        # -------------------------------------------
         workoutset_all = models.WorkoutSet.objects.all()
         self.assertEqual(len(workoutset_all), 1)
         test_workoutset = workoutset_all[0]
@@ -120,8 +137,8 @@ class TestWorkoutSetAPI(TestCase):
         self.assertEqual(test_workoutset.reps, 5)
         self.assertEqual(test_workoutset.order, 5)
         self.assertEqual(test_workoutset.weight_value, 100000)
-        self.assertEqual(test_workoutset.weight_unit, 'Weight(g)')
-        self.assertEqual(test_workoutset.weight_measure, 'kg')
+        self.assertEqual(test_workoutset.weight_unit, 'kg')
+        self.assertEqual(test_workoutset.weight_measure, 'Weight(g)')
 
     def test_workout_set_post_multiple(self):
         '''Test WorkoutSet POST for a given workout (with and without WorkoutSets)'''
@@ -137,8 +154,8 @@ class TestWorkoutSetAPI(TestCase):
                 'exercise_fk': self.exercise_caber.id,
                 'reps': 1,
                 'order': 1,
-                'weight_0': 1,
-                'weight_1': 'kg'
+                'user_weight_value': 1,
+                'weight_unit': 'kg',
                 }
         resp = self.client.post('/workouts/{0}/workoutsets/'.format(workout.id), data)
         self.assertEqual(resp.status_code, 200)
@@ -148,8 +165,8 @@ class TestWorkoutSetAPI(TestCase):
                 'exercise_fk': self.exercise_caber.id,
                 'reps': 2,
                 'order': 2,
-                'weight_0': 2,
-                'weight_1': 'kg'
+                'user_weight_value': 2,
+                'weight_unit': 'kg',
                 }
         resp = self.client.post('/workouts/{0}/workoutsets/'.format(workout.id), data)
         self.assertEqual(resp.status_code, 200)
@@ -177,8 +194,8 @@ class TestWorkoutSetAPI(TestCase):
                 'exercise_fk': self.exercise_caber.id,
                 'reps': 1,
                 'order': 1,
-                'weight_0': 1,
-                'weight_1': 'kg'
+                'user_weight_value': 1,
+                'weight_unit': 'kg',
                 }
         resp = self.client.post('/workouts/{0}/workoutsets/'.format(workout.id), data)
         self.assertEqual(resp.status_code, 403)
@@ -240,12 +257,13 @@ class TestWorkoutSetAPI(TestCase):
                 'exercise_fk': self.exercise_caber.id,
                 'reps': rand_int + 1,
                 'order': rand_int + 1,
-                'weight_0': 100,
-                'weight_1': 'lb'
+                'user_weight_value': 1,
+                'weight_unit': 'kg',
                 }
         resp = self.client.put('/workouts/{0}/workoutsets/{1}/'
                                 ''.format(workout.id, workoutset.id), data)
         self.assertEqual(resp.status_code, 200)
+        # We are really concerned with making sure the value didn't change in the DB.
         self.assertEqual(models.WorkoutSet.objects.get(pk=workoutset.id).workout_fk.id,
                          workout.id)
 
@@ -255,8 +273,8 @@ class TestWorkoutSetAPI(TestCase):
                 'exercise_fk': self.exercise_caber.id,
                 'reps': rand_int + 1,
                 'order': rand_int + 1,
-                'weight_0': 100,
-                'weight_1': 'lb'
+                'user_weight_value': 1,
+                'weight_unit': 'kg',
                 }
         resp = self.client.put('/workouts/{0}/workoutsets/{1}/'
                                 ''.format(workout.id, workoutset.id), data)
@@ -310,8 +328,8 @@ class TestWorkoutSetAPI(TestCase):
                 'exercise_fk': self.exercise_caber.id,
                 'reps': 2,
                 'order': 2,
-                'weight_0': 100,
-                'weight_1': 'lb'
+                'user_weight_value': 1,
+                'weight_unit': 'kg',
                 }
         resp = self.client.put('/workouts/{0}/workoutsets/{1}/'
                                 ''.format(workout.id, workoutset.id), data)

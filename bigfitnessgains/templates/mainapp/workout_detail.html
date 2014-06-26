@@ -114,8 +114,8 @@ $(document).ready(function(){
                 "exercise_fk": $("#id_exercise_fk").val(),
                 "reps": $("#id_reps").val(),
                 "order": new_order,
-                "weight_0": $("#id_weight_0").val(),
-                "weight_1": $("#id_weight_1").val(),
+                "user_weight_value": $("#id_weight_0").val(),
+                "weight_unit": $("#id_weight_1").val(),
                     }),
             type: 'POST',
 
@@ -126,13 +126,17 @@ $(document).ready(function(){
             },
             success: function(resultData) {
                 console.log("POST resultData ", resultData),
+                {% comment %}
+                // WARNING - this is bound to the workout_set_table.html
+                // IF you touch that you need to carefully touch this.
+                {% endcomment %}
                 $("table tbody").append("<tr id=\"workoutset_" + resultData.id + "\">"+
                         "<td>" + resultData.order + "</td>"+
-                        "<td>" + resultData.exercise_fk.name + "</td>"+
+                        "<td>" + resultData.exercise_fk.exercise_name + "</td>"+
                         "<td class=\"hidden\">" + resultData.exercise_fk.id + "</td>"+
                         "<td>" + resultData.reps + "</td>"+
-                        "<td>" + resultData.converted_weight + "</td>"+
-                        "<td class=\"hidden\">" + resultData.weight_unit + "</td>"+
+                        "<td>" + resultData.user_weight_value + "</td>"+
+                        "<td>" + resultData.weight_unit + "</td>"+
                         "<td class=\"hidden\">" + resultData.id + "</td>"+
                         "</tr>");
             },
@@ -163,8 +167,8 @@ $(document).ready(function(){
                 "exercise_fk": exercise_fk,
                 "reps": reps,
                 "order": order,
-                "weight_0": weight,
-                "weight_1": weight_unit,
+                "user_weight_value": weight,
+                "weight_unit": weight_unit,
                     }),
             type: 'PUT',
 
@@ -216,16 +220,10 @@ $(document).ready(function(){
             //get the direction 'up' or 'down' that the record was dragged.
             var drag_direction = ui.item.data('drag_direction');
 
-            // TODO - Remove, just dumping to console for printline debugging
-            console.log(
-                    {{ workout.id }},
-                    $(thisTable.rows[movedRowIndex].cells[0]).text(),
-                    $(thisTable.rows[movedRowIndex].cells[2]).text(),
-                    $(thisTable.rows[movedRowIndex].cells[3]).text(),
-                    $(thisTable.rows[movedRowIndex].cells[4]).text(),
-                    $(thisTable.rows[movedRowIndex].cells[5]).text(),
-                    $(thisTable.rows[movedRowIndex].cells[6]).text());
-
+            {% comment %}
+            // WARNING - this is bound to the workout_set_table.html
+            // IF you touch that you need to carefully touch this.
+            {% endcomment %}
             updateWorkoutSet(
                     {{ workout.id }}, // TODO - fix hack for workout id
                     $(thisTable.rows[movedRowIndex].cells[0]).text(),
@@ -236,14 +234,16 @@ $(document).ready(function(){
                     $(thisTable.rows[movedRowIndex].cells[6]).text()
                     )
 
-            // TODO - update each item we dragged.
+            // Possible TODO - this is not efficient at all, I go through
+            // a complete PUT for each record that gets moved. It is
+            // a brute force approach to start from.
 
             //if the record was drageed down the table, update record page#s above
             if (drag_direction == 'down') {
                 for (var i = 1; i < thisTable.rows.length; i++) {
                     if (i < movedRowIndex) {
                         $(thisTable.rows[i].cells[0]).text(i);
-                        // TODO - FIX THIS JUNK
+                        // TODO - would like to find a more elegant approach.
                         updateWorkoutSet(
                                 {{ workout.id }},
                                 $(thisTable.rows[i].cells[0]).text(),
@@ -262,7 +262,7 @@ $(document).ready(function(){
                 for (var i = 1; i < thisTable.rows.length; i++) {
                     if (i > movedRowIndex) {
                         $(thisTable.rows[i].cells[0]).text(i);
-                        // TODO - FIX THIS JUNK
+                        // TODO - would like to find a more elegant approach.
                         updateWorkoutSet(
                                 {{ workout.id }},
                                 $(thisTable.rows[i].cells[0]).text(),
@@ -276,9 +276,6 @@ $(document).ready(function(){
                 }
             }
         }
-
-
-
     }).disableSelection();
 
 });
