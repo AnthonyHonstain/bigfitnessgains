@@ -25,7 +25,7 @@ def setup_database():
 
     leg_exercise = models.Exercise.objects.get(exercise_name="Truck Pull")
     leg_workout = models.Workout.objects.get(user_fk=user, workout_name="Erry day is leg day")
-    
+
     _create_workout_set(leg_workout, leg_exercise, 12)
     _create_workout_set(leg_workout, leg_exercise, 10)
     _create_workout_set(leg_workout, leg_exercise, 8)
@@ -48,12 +48,14 @@ def _create_workout(user, workout_name, workout_date=timezone.now()):
                                 workout_name=workout_name,
                                 workout_date=workout_date)
 
+
 # TODO: figure out how django-measurement fetches the Weight(g)
 # to dump into column and use that here, instead of a string
 def _create_workout_set(workout_fk, exercise_fk, reps=5, weight=100, weight_unit='kg', weight_measure='Weight(g)'):
     models.WorkoutSet.objects.create(workout_fk=workout_fk,
                                     exercise_fk=exercise_fk,
                                     reps=reps,
+                                    order=1, # TODO - just dumping it in for now.
                                     weight_value=weight,
                                     weight_unit=weight_unit,
                                     weight_measure=weight_measure)

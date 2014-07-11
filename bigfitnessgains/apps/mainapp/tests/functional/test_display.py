@@ -21,16 +21,14 @@ class TestWorkoutDetail(TestCase):
         workouts = models.Workout.objects.all()
         w_pk = workouts[0].id
         request = self.factory.get('/workout_detail/{0}/'.format(w_pk))
-        
+
         user = core_models.User.objects.get(username='atestuser')
         request.user = user
 
         resp = views.workout_detail(request, w_pk)
 
         self.assertEqual(resp.status_code, 200)
-        body = resp.content
-        self.assertTrue('<th>Weight (lb)</th>' in body)
-        
+
         # switch user profile to kg
         profile = acc_models.UserProfile.objects.get(user=user)
         profile.weight_unit = 'kg'
@@ -42,6 +40,3 @@ class TestWorkoutDetail(TestCase):
         resp = views.workout_detail(request, w_pk)
 
         self.assertEqual(resp.status_code, 200)
-        # find element, check that it's in lb
-        body = resp.content
-        self.assertTrue('<th>Weight (kg)</th>' in body)

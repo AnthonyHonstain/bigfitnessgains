@@ -20,4 +20,4 @@ class WorkoutSetForm(MeasurementFormMixin, forms.ModelForm):
 
     class Meta:
         model = WorkoutSet
-        exclude = ['workout_fk', 'modified']
+        exclude = ['workout_fk', 'modified', 'order']
