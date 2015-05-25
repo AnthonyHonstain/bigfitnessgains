@@ -158,7 +158,7 @@ Developement Guide
 
 Deployment Guide
 ===========
-http://bigfitnessgains.herokuapp.com/
+~~http://bigfitnessgains.herokuapp.com/~~ UPDATE - disabled on 5/25/2015, unlikely to continue developing on the site so I disabled the S3 buckets and turned off the app on heroku.
 
 **IMPORTANT** - *'heroku run python manage.py compress'* is important, so that the static resources are sent to AWS and a manifest is generated. For some reason this is not done during Heroku's compression step.
 ```
